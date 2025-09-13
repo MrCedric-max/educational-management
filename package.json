@@ -8,7 +8,7 @@
     "start:frontend": "powershell -File scripts/start-frontend-absolute.ps1",
     "start:backend": "powershell -File scripts/start-backend-absolute.ps1",
     "build": "npm run build:frontend",
-    "build:frontend": "powershell -Command \"Set-Location frontend; npm run build\"",
+    "build:frontend": "cd frontend && npm install && npm run build",
     "install:all": "powershell -File scripts/install-all.ps1",
     "clean": "powershell -Command \"Remove-Item -Recurse -Force node_modules, frontend/node_modules, backend/node_modules -ErrorAction SilentlyContinue\"",
     "test": "npm run test:frontend",
