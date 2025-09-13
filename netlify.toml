@@ -1,7 +1,7 @@
 [build]
   base = "."
-  command = "echo 'Using pre-built assets'"
-  publish = "build"
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/build"
 
 [build.environment]
   NODE_ENV = "production"
