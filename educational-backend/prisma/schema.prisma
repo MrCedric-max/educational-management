@@ -1,0 +1,384 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User Management
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  fullName          String
+  role              UserRole
+  schoolId          String?
+  classId           String?
+  isActive          Boolean   @default(true)
+  passwordHash      String
+  temporaryPassword String?
+  lastLoginAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Relations
+  school            School?   @relation(fields: [schoolId], references: [id])
+  class             Class?    @relation("ClassStudents", fields: [classId], references: [id])
+  teachingClass     Class?    @relation("ClassTeacher")
+  children          Student[] @relation("StudentParent")
+  createdLessonPlans LessonPlan[]
+  createdQuizzes    Quiz[]
+  quizAttempts      QuizAttempt[]
+  progressData      ProgressData[]
+  attendanceRecords AttendanceRecord[]
+  messages          Message[]
+  notifications     Notification[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  SCHOOL_ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+// School Management
+model School {
+  id                 String            @id @default(cuid())
+  name               String
+  system             SchoolSystem
+  adminEmail         String
+  adminId            String
+  schoolCode         String            @unique
+  isActive           Boolean           @default(true)
+  subscriptionStatus SubscriptionStatus @default(TRIAL)
+  revenue            Float             @default(0)
+  lastActivity       DateTime          @default(now())
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  // Relations
+  users              User[]
+  classes            Class[]
+  students           Student[]
+  lessonPlans        LessonPlan[]
+  quizzes            Quiz[]
+  reports            Report[]
+  analytics          SchoolAnalytics[]
+
+  @@map("schools")
+}
+
+enum SchoolSystem {
+  ANGLOPHONE
+  FRANCOPHONE
+}
+
+enum SubscriptionStatus {
+  TRIAL
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+}
+
+// Class Management
+model Class {
+  id          String   @id @default(cuid())
+  name        String
+  level       String
+  system      SchoolSystem
+  schoolId    String
+  teacherId   String?  @unique
+  studentCount Int     @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  school      School   @relation(fields: [schoolId], references: [id])
+  teacher     User?    @relation("ClassTeacher", fields: [teacherId], references: [id])
+  students    User[]   @relation("ClassStudents")
+  studentRecords Student[] @relation("ClassStudentRecords")
+  lessonPlans LessonPlan[]
+  quizzes     Quiz[]
+  progressData ProgressData[]
+
+  @@map("classes")
+}
+
+// Student Management
+model Student {
+  id            String   @id @default(cuid())
+  fullName      String
+  classId       String
+  schoolId      String
+  parentId      String?
+  enrollmentDate DateTime @default(now())
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  class         Class    @relation("ClassStudentRecords", fields: [classId], references: [id])
+  school        School   @relation(fields: [schoolId], references: [id])
+  parent        User?    @relation("StudentParent", fields: [parentId], references: [id])
+  quizAttempts  QuizAttempt[]
+  progressData  ProgressData[]
+  attendanceRecords AttendanceRecord[]
+
+  @@map("students")
+}
+
+// Lesson Plan Management
+model LessonPlan {
+  id               String        @id @default(cuid())
+  title            String
+  subject          String
+  className        String
+  system           SchoolSystem
+  level            String
+  learningTheme    String
+  enrolment        Int
+  averageAge       Int
+  time             String
+  duration         Int
+  domain           String
+  entryBehaviour   String
+  specificObjectives String[]
+  didacticMaterials String[]
+  references       String[]
+  stages           Json
+  evaluation       String
+  homework         String
+  notes            String
+  date             String
+  status           LessonPlanStatus @default(DRAFT)
+  teacherId        String
+  schoolId         String
+  classId          String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  // Relations
+  teacher          User          @relation(fields: [teacherId], references: [id])
+  school           School        @relation(fields: [schoolId], references: [id])
+  class            Class?        @relation(fields: [classId], references: [id])
+
+  @@map("lesson_plans")
+}
+
+enum LessonPlanStatus {
+  DRAFT
+  READY
+  COMPLETED
+}
+
+// Quiz Management
+model Quiz {
+  id            String      @id @default(cuid())
+  title         String
+  subject       String
+  className     String
+  system        SchoolSystem
+  level         String
+  topic         String
+  duration      Int
+  totalQuestions Int
+  totalPoints   Int
+  difficulty    QuizDifficulty
+  questions     Json
+  instructions  String
+  passingScore  Int
+  timeLimit     Int
+  status        QuizStatus  @default(READY)
+  teacherId     String
+  schoolId      String
+  classId       String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  teacher       User        @relation(fields: [teacherId], references: [id])
+  school        School      @relation(fields: [schoolId], references: [id])
+  class         Class?      @relation(fields: [classId], references: [id])
+  attempts      QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+enum QuizDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum QuizStatus {
+  DRAFT
+  READY
+  COMPLETED
+}
+
+// Quiz Attempts
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  quizId    String
+  studentId String
+  userId    String
+  answers   Json
+  score     Int
+  timeSpent Int
+  completedAt DateTime @default(now())
+
+  // Relations
+  quiz      Quiz     @relation(fields: [quizId], references: [id])
+  student   Student  @relation(fields: [studentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("quiz_attempts")
+}
+
+// Progress Tracking
+model ProgressData {
+  id        String   @id @default(cuid())
+  studentId String
+  userId    String
+  classId   String
+  subject   String
+  level     String
+  score     Float
+  date      DateTime @default(now())
+  type      ProgressType
+
+  // Relations
+  student   Student  @relation(fields: [studentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  class     Class    @relation(fields: [classId], references: [id])
+
+  @@map("progress_data")
+}
+
+enum ProgressType {
+  QUIZ
+  ASSIGNMENT
+  EXAM
+  PROJECT
+}
+
+// Attendance Management
+model AttendanceRecord {
+  id        String   @id @default(cuid())
+  studentId String
+  userId    String
+  date      DateTime @default(now())
+  status    AttendanceStatus
+  reason    String?
+
+  // Relations
+  student   Student  @relation(fields: [studentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("attendance_records")
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+// Messaging System
+model Message {
+  id        String   @id @default(cuid())
+  fromId    String
+  toId      String
+  subject   String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  from      User     @relation(fields: [fromId], references: [id])
+
+  @@map("messages")
+}
+
+// Notifications
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  INFO
+  WARNING
+  ERROR
+  SUCCESS
+}
+
+// Reports
+model Report {
+  id        String   @id @default(cuid())
+  type      ReportType
+  schoolId  String
+  classId   String?
+  data      Json
+  status    ReportStatus @default(PENDING)
+  generatedAt DateTime?
+  createdAt DateTime @default(now())
+
+  // Relations
+  school    School   @relation(fields: [schoolId], references: [id])
+
+  @@map("reports")
+}
+
+enum ReportType {
+  STUDENT_PROGRESS
+  CLASS_PERFORMANCE
+  SCHOOL_ANALYTICS
+  ATTENDANCE
+  QUIZ_RESULTS
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+// School Analytics
+model SchoolAnalytics {
+  id        String   @id @default(cuid())
+  schoolId  String
+  date      DateTime @default(now())
+  totalUsers Int
+  totalTeachers Int
+  totalStudents Int
+  totalQuizzes Int
+  totalLessonPlans Int
+  revenue   Float
+  data      Json
+
+  // Relations
+  school    School   @relation(fields: [schoolId], references: [id])
+
+  @@map("school_analytics")
+}

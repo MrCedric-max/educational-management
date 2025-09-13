@@ -1,0 +1,22 @@
+{
+  "name": "educational-management-backend",
+  "version": "1.0.0",
+  "description": "Backend server for Educational Management System",
+  "main": "simple-server.js",
+  "scripts": {
+    "start": "node simple-server.js",
+    "dev": "node simple-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "compression": "^1.7.4",
+    "socket.io": "^4.7.4",
+    "express-rate-limit": "^7.1.5"
+  },
+  "keywords": ["education", "management", "backend"],
+  "author": "Educational Management System",
+  "license": "MIT"
+}
