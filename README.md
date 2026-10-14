@@ -2,6 +2,19 @@
 
 A comprehensive monorepo containing both frontend and backend applications for educational management.
 
+## 🆕 School Manager — the `School_Manager` workbook as a web app
+
+The **[`school-manager/`](school-manager/README.md)** folder contains a complete, self-contained web app that
+reproduces the École AZOBE `School_Manager.xlsx` workbook: registration, calendar, roll call, weekly controls,
+daily performance, monthly & term marks, class reports, official A4 report cards and statistics — bilingual
+(EN/FR), with a one-click import of the workbook.
+
+```bash
+cd school-manager && npm install && npm run build && npm start   # → http://localhost:4000
+```
+
+On Windows, simply double-click `school-manager/start.bat`. See [school-manager/README.md](school-manager/README.md).
+
 ## 🚨 IMPORTANT: Avoiding Common Issues
 
 This project has been configured to prevent common development issues. **ALWAYS** follow these guidelines:
