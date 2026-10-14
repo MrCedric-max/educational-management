@@ -17,6 +17,8 @@ const Notification = require('./Notification')(sequelize, DataTypes);
 const File = require('./File')(sequelize, DataTypes);
 const Attendance = require('./Attendance')(sequelize, DataTypes);
 const Grade = require('./Grade')(sequelize, DataTypes);
+const Timetable = require('./Timetable')(sequelize, DataTypes);
+const ReportCard = require('./ReportCard')(sequelize, DataTypes);
 
 // Define associations
 const defineAssociations = () => {
@@ -94,6 +96,19 @@ const defineAssociations = () => {
   Student.hasMany(Grade, { foreignKey: 'studentId', as: 'grades' });
   Quiz.hasMany(Grade, { foreignKey: 'quizId', as: 'grades' });
   Class.hasMany(Grade, { foreignKey: 'classId', as: 'grades' });
+
+  // Timetable associations
+  Timetable.belongsTo(Class, { foreignKey: 'classId', as: 'class' });
+  Timetable.belongsTo(Teacher, { foreignKey: 'teacherId', as: 'teacher' });
+  Timetable.belongsTo(Subject, { foreignKey: 'subjectId', as: 'subject' });
+  Class.hasMany(Timetable, { foreignKey: 'classId', as: 'timetables' });
+  Teacher.hasMany(Timetable, { foreignKey: 'teacherId', as: 'timetables' });
+
+  // Report Card associations
+  ReportCard.belongsTo(Student, { foreignKey: 'studentId', as: 'student' });
+  ReportCard.belongsTo(Class, { foreignKey: 'classId', as: 'class' });
+  Student.hasMany(ReportCard, { foreignKey: 'studentId', as: 'reportCards' });
+  Class.hasMany(ReportCard, { foreignKey: 'classId', as: 'reportCards' });
 };
 
 // Initialize associations
@@ -116,7 +131,9 @@ module.exports = {
   Notification,
   File,
   Attendance,
-  Grade
+  Grade,
+  Timetable,
+  ReportCard
 };
 
 

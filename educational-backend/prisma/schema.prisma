@@ -37,6 +37,7 @@ model User {
   attendanceRecords AttendanceRecord[]
   messages          Message[]
   notifications     Notification[]
+  timetableSlots    TimetableSlot[] @relation("TeacherTimetableSlots")
 
   @@map("users")
 }
@@ -72,6 +73,7 @@ model School {
   quizzes            Quiz[]
   reports            Report[]
   analytics          SchoolAnalytics[]
+  subjects           Subject[]
 
   @@map("schools")
 }
@@ -108,6 +110,9 @@ model Class {
   lessonPlans LessonPlan[]
   quizzes     Quiz[]
   progressData ProgressData[]
+  timetableSlots TimetableSlot[]
+  gradeRecords SubjectGradeRecord[]
+  reportCards ReportCard[]
 
   @@map("classes")
 }
@@ -131,6 +136,8 @@ model Student {
   quizAttempts  QuizAttempt[]
   progressData  ProgressData[]
   attendanceRecords AttendanceRecord[]
+  gradeRecords  SubjectGradeRecord[]
+  reportCards   ReportCard[]
 
   @@map("students")
 }
@@ -381,4 +388,112 @@ model SchoolAnalytics {
   school    School   @relation(fields: [schoolId], references: [id])
 
   @@map("school_analytics")
+}
+
+// Subject Model
+model Subject {
+  id          String       @id @default(cuid())
+  name        String
+  code        String       @unique
+  system      SchoolSystem
+  coefficient Int          @default(1)
+  department  String?
+  schoolId    String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  school         School?             @relation(fields: [schoolId], references: [id])
+  timetableSlots TimetableSlot[]
+  gradeRecords   SubjectGradeRecord[]
+
+  @@map("subjects")
+}
+
+// Timetable Slot Model
+model TimetableSlot {
+  id           String       @id @default(cuid())
+  classId      String
+  className    String
+  subjectId    String?
+  subjectName  String
+  teacherId    String
+  teacherName  String
+  dayOfWeek    Int          // 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
+  periodNumber Int          // 1..8
+  startTime    String       // "07:30"
+  endTime      String       // "08:25"
+  room         String       @default("Room 101")
+  academicYear String       @default("2026-2027")
+  term         String       @default("Term 1")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  class        Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  teacher      User         @relation("TeacherTimetableSlots", fields: [teacherId], references: [id])
+  subject      Subject?     @relation(fields: [subjectId], references: [id])
+
+  @@unique([classId, dayOfWeek, periodNumber])
+  @@unique([teacherId, dayOfWeek, periodNumber])
+  @@map("timetable_slots")
+}
+
+// Subject Grade Record (Continuous Assessment & Exams)
+model SubjectGradeRecord {
+  id          String       @id @default(cuid())
+  studentId   String
+  classId     String
+  subjectId   String?
+  subjectName String
+  term        String
+  sequence    Int?
+  system      SchoolSystem @default(ANGLOPHONE)
+  ca1         Float?
+  ca2         Float?
+  exam        Float?
+  totalScore  Float
+  maxScore    Float        @default(20)
+  coefficient Int          @default(1)
+  remark      String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  student     Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class       Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subject     Subject?     @relation(fields: [subjectId], references: [id])
+
+  @@map("subject_grade_records")
+}
+
+// Official Term Report Card
+model ReportCard {
+  id               String       @id @default(cuid())
+  studentId        String
+  studentName      String
+  classId          String
+  className        String
+  academicYear     String       @default("2026-2027")
+  term             String
+  system           SchoolSystem
+  totalPoints      Float
+  totalMaxPoints   Float
+  average          Float
+  rank             Int?
+  classSize        Int          @default(1)
+  conduct          String       @default("Good")
+  absences         Int          @default(0)
+  teacherRemarks   String?
+  principalRemarks String?
+  isPublished      Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  // Relations
+  student          Student      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  class            Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, term, academicYear])
+  @@map("report_cards")
 }
