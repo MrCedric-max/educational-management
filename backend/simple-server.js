@@ -46,7 +46,8 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 const mockUsers = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'teacher' },
   { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'student' },
-  { id: 3, name: 'Admin User', email: 'admin@example.com', role: 'admin' }
+  { id: 3, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
+  { id: 4, name: 'Test User', email: 'test@example.com', role: 'teacher' }
 ];
 
 const mockSchools = [

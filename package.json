@@ -13,6 +13,7 @@
     "clean": "node -e \"const fs=require('fs'); ['node_modules', 'frontend/node_modules', 'backend/node_modules'].forEach(p => fs.rmSync(p, {recursive: true, force: true}))\"",
     "test": "npm run test:frontend",
     "test:frontend": "npm test --prefix frontend -- --watchAll=false",
+    "test:api": "node scripts/test-endpoints.js",
     "start:win": "powershell -Command \"Start-Process powershell -ArgumentList '-Command', 'cd backend; node simple-server.js' -WindowStyle Minimized; Start-Process powershell -ArgumentList '-Command', 'cd frontend; npm start' -WindowStyle Minimized\"",
     "start:backend:win": "powershell -Command \"cd backend; node simple-server.js\"",
     "start:frontend:win": "powershell -Command \"cd frontend; npm start\""
