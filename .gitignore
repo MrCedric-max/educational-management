@@ -54,6 +54,7 @@ backups/
 
 # Database
 *.sqlite
+*.sqlite*
 *.db
 
 # Cache

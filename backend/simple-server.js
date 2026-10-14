@@ -11,6 +11,16 @@ require('dotenv').config();
 // Database Service Layer (Persisted SQLite / PostgreSQL)
 const db = require('./database/db');
 
+// Authentication & JWT Security Middleware
+const {
+  generateToken,
+  comparePassword,
+  hashPassword,
+  authenticateToken,
+  requireRole,
+  optionalAuth
+} = require('./middleware/authMiddleware');
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -64,144 +74,10 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Users endpoint (Database Backed)
-app.get('/api/users', (req, res) => {
-  try {
-    const users = db.getUsers();
-    res.json({
-      success: true,
-      data: users,
-      count: users.length
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
+// -----------------------------------------------------------------------------
+// Authentication Routes (JWT & Password Hashing)
+// -----------------------------------------------------------------------------
 
-// Schools endpoint (Database Backed)
-app.get('/api/schools', (req, res) => {
-  try {
-    const schools = db.getSchools();
-    res.json({
-      success: true,
-      data: schools,
-      count: schools.length
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Classes endpoint (Database Backed)
-app.get('/api/classes', (req, res) => {
-  try {
-    const classes = db.getClasses();
-    res.json({
-      success: true,
-      data: classes,
-      count: classes.length
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Students endpoint (Database Backed)
-app.get('/api/students', (req, res) => {
-  try {
-    const students = db.getStudents(req.query.classId);
-    res.json({
-      success: true,
-      data: students,
-      count: students.length
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Attendance endpoints (Database Backed)
-app.get('/api/attendance', (req, res) => {
-  try {
-    const { classId, date } = req.query;
-    const result = db.getAttendance({ classId, date });
-    res.json({ success: true, count: result.length, data: result });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-app.post('/api/attendance', (req, res) => {
-  try {
-    const { records } = req.body;
-    if (Array.isArray(records)) {
-      db.saveAttendance(records);
-    } else if (req.body) {
-      db.saveAttendance(req.body);
-    }
-    res.status(201).json({ success: true, message: 'Attendance recorded successfully' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Grades & Gradebook endpoints (Database Backed)
-app.get('/api/grades', (req, res) => {
-  try {
-    const { classId, subjectId, term } = req.query;
-    const result = db.getGrades({ classId, subjectId, term });
-    res.json({ success: true, count: result.length, data: result });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-app.post('/api/grades', (req, res) => {
-  try {
-    const { grades } = req.body;
-    if (Array.isArray(grades)) {
-      db.saveGrades(grades);
-    } else if (req.body) {
-      db.saveGrades(req.body);
-    }
-    res.status(201).json({ success: true, message: 'Grades saved successfully' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Timetable endpoints (Database Backed)
-app.get('/api/timetables', (req, res) => {
-  try {
-    const { classId, teacherId } = req.query;
-    const result = db.getTimetables({ classId, teacherId });
-    res.json({ success: true, count: result.length, data: result });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-app.post('/api/timetables', (req, res) => {
-  try {
-    const newSlot = db.createTimetableSlot(req.body);
-    res.status(201).json({ success: true, data: newSlot, message: 'Timetable slot created' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Report Cards endpoint (Database Backed)
-app.get('/api/report-cards', (req, res) => {
-  try {
-    const { classId, studentId, term } = req.query;
-    const result = db.getReportCards({ classId, studentId, term });
-    res.json({ success: true, count: result.length, data: result });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-// Auth endpoints (Database Backed)
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   
@@ -214,7 +90,8 @@ app.post('/api/auth/login', (req, res) => {
 
   try {
     const user = db.getUserByEmail(email);
-    if (user && (password === 'password123' || user.password_hash === password)) {
+    if (user && comparePassword(password, user.password_hash)) {
+      const token = generateToken(user);
       res.json({
         success: true,
         message: 'Login successful',
@@ -224,7 +101,7 @@ app.post('/api/auth/login', (req, res) => {
           email: user.email,
           role: user.role
         },
-        token: 'mock-jwt-token-' + Date.now()
+        token
       });
     } else {
       res.status(401).json({
@@ -248,12 +125,186 @@ app.post('/api/auth/register', (req, res) => {
   }
 
   try {
-    const newUser = db.createUser({ name, email, password, role });
+    const hashedPassword = hashPassword(password);
+    const newUser = db.createUser({ name, email, password: hashedPassword, role });
+    const token = generateToken(newUser);
+
     res.status(201).json({
       success: true,
       message: 'Registration successful',
       user: newUser,
-      token: 'mock-jwt-token-' + Date.now()
+      token
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Current Authenticated User Profile (JWT Protected)
+app.get('/api/auth/me', authenticateToken, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user
+  });
+});
+
+// -----------------------------------------------------------------------------
+// Core Domain Entities (Database Backed)
+// -----------------------------------------------------------------------------
+
+// Users endpoint
+app.get('/api/users', optionalAuth, (req, res) => {
+  try {
+    const users = db.getUsers();
+    res.json({
+      success: true,
+      data: users,
+      count: users.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Schools endpoint
+app.get('/api/schools', (req, res) => {
+  try {
+    const schools = db.getSchools();
+    res.json({
+      success: true,
+      data: schools,
+      count: schools.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Classes endpoint
+app.get('/api/classes', (req, res) => {
+  try {
+    const classes = db.getClasses();
+    res.json({
+      success: true,
+      data: classes,
+      count: classes.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Students endpoint
+app.get('/api/students', (req, res) => {
+  try {
+    const students = db.getStudents(req.query.classId);
+    res.json({
+      success: true,
+      data: students,
+      count: students.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Attendance endpoints
+app.get('/api/attendance', optionalAuth, (req, res) => {
+  try {
+    const { classId, date } = req.query;
+    const result = db.getAttendance({ classId, date });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/attendance', optionalAuth, (req, res) => {
+  try {
+    const { records } = req.body;
+    if (Array.isArray(records)) {
+      db.saveAttendance(records);
+    } else if (req.body) {
+      db.saveAttendance(req.body);
+    }
+    res.status(201).json({ success: true, message: 'Attendance recorded successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Grades & Gradebook endpoints
+app.get('/api/grades', optionalAuth, (req, res) => {
+  try {
+    const { classId, subjectId, term } = req.query;
+    const result = db.getGrades({ classId, subjectId, term });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/grades', optionalAuth, (req, res) => {
+  try {
+    const { grades } = req.body;
+    if (Array.isArray(grades)) {
+      db.saveGrades(grades);
+    } else if (req.body) {
+      db.saveGrades(req.body);
+    }
+    res.status(201).json({ success: true, message: 'Grades saved successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Timetable endpoints
+app.get('/api/timetables', (req, res) => {
+  try {
+    const { classId, teacherId } = req.query;
+    const result = db.getTimetables({ classId, teacherId });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+app.post('/api/timetables', optionalAuth, (req, res) => {
+  try {
+    const newSlot = db.createTimetableSlot(req.body);
+    res.status(201).json({ success: true, data: newSlot, message: 'Timetable slot created' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Report Cards endpoint
+app.get('/api/report-cards', optionalAuth, (req, res) => {
+  try {
+    const { classId, studentId, term } = req.query;
+    const result = db.getReportCards({ classId, studentId, term });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Admin Protected Analytics Endpoint
+app.get('/api/admin/metrics', authenticateToken, requireRole(['ADMIN', 'SCHOOL_ADMIN', 'SUPER_ADMIN']), (req, res) => {
+  try {
+    const users = db.getUsers();
+    const schools = db.getSchools();
+    const classes = db.getClasses();
+    const students = db.getStudents();
+    res.json({
+      success: true,
+      metrics: {
+        totalUsers: users.length,
+        totalSchools: schools.length,
+        totalClasses: classes.length,
+        totalStudents: students.length,
+        serverUptime: process.uptime()
+      }
     });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
