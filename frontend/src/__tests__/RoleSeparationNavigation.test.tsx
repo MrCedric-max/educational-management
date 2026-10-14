@@ -248,6 +248,12 @@ describe('Strict Role Separation & Accordion Navigation', () => {
         isActive: true,
         createdAt: new Date()
       },
+      availableUsers: [
+        { id: '1', fullName: 'Super Administrator', email: 'superadmin@system.com', role: 'super_admin', isActive: true, createdAt: new Date() },
+        { id: '2', fullName: 'School Administrator', email: 'admin@stmarys.edu', role: 'school_admin', isActive: true, createdAt: new Date() },
+        { id: '3', fullName: 'John Doe', email: 'john.doe@stmarys.edu', role: 'teacher', isActive: true, createdAt: new Date() },
+        { id: '5', fullName: 'Parent User', email: 'parent@example.com', role: 'parent', isActive: true, createdAt: new Date() }
+      ],
       school: null,
       login: jest.fn(),
       logout: jest.fn(),
@@ -255,23 +261,24 @@ describe('Strict Role Separation & Accordion Navigation', () => {
       isLoading: false,
       hasPermission: () => true,
       switchRole: jest.fn(),
+      switchUser: jest.fn(),
       language: 'en',
       setLanguage: jest.fn()
     });
 
     renderWithRouter(<SidebarNavigation />);
 
-    // Open role switcher popover
-    const switcherButton = screen.getByRole('button', { name: /Switch Profile/i });
+    // Open user switcher modal
+    const switcherButton = screen.getByRole('button', { name: /Switch User/i });
     fireEvent.click(switcherButton);
 
     // Verify student profile option does NOT exist
-    expect(screen.queryByRole('button', { name: /^student$/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/^student$/i)).not.toBeInTheDocument();
     
-    // Verify only the 4 allowed roles exist in demo switcher
-    expect(screen.getByRole('button', { name: /super admin/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /school admin/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /teacher/i })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /parent/i })).toBeInTheDocument();
+    // Verify only the 4 allowed roles exist in switcher modal
+    expect(screen.getAllByText(/super admin/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/school admin/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/teacher/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/parent/i).length).toBeGreaterThan(0);
   });
 });

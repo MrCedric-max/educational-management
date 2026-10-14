@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Plus, Search, UserPlus, Download, Upload, Settings, School, BookOpen, GraduationCap, CheckCircle, XCircle, Eye, Edit, BarChart3, Clock, FileText, TrendingUp, Calendar } from 'lucide-react';
+import { Users, Plus, Search, UserPlus, Download, Upload, Settings, School, BookOpen, GraduationCap, CheckCircle, XCircle, Eye, Edit, BarChart3, Clock, FileText, TrendingUp, Calendar, ArrowRightLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCameroonianEducation } from '../contexts/CameroonianEducationContext';
+import UserSwitcherModal from '../components/UserSwitcherModal';
 
 // Types and Interfaces for School Admin Dashboard
 type UserRole = 'teacher' | 'student' | 'parent';
@@ -82,6 +83,7 @@ const SchoolAdminDashboard: React.FC = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showUserSwitcherModal, setShowUserSwitcherModal] = useState(false);
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showUserForm, setShowUserForm] = useState(false);
   const [showClassForm, setShowClassForm] = useState(false);
@@ -545,23 +547,34 @@ const SchoolAdminDashboard: React.FC = () => {
           </div>
           
           {/* Current Date and Time - Right Side */}
-          <div className="flex items-center space-x-2 text-right">
-            <Clock className="h-5 w-5 text-gray-500" />
-            <div>
-              <div className="text-sm font-medium text-gray-900">
-                {currentDateTime.toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </div>
-              <div className="text-sm text-gray-600">
-                {currentDateTime.toLocaleTimeString('en-US', { 
-                  hour: '2-digit', 
-                  minute: '2-digit', 
-                  second: '2-digit' 
-                })}
+          <div className="flex items-center space-x-3 text-right">
+            <button
+              onClick={() => setShowUserSwitcherModal(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition-colors shadow-sm"
+              title="Switch user account"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <span>Switch User</span>
+            </button>
+
+            <div className="flex items-center space-x-2">
+              <Clock className="h-5 w-5 text-gray-500" />
+              <div>
+                <div className="text-sm font-medium text-gray-900">
+                  {currentDateTime.toLocaleDateString('en-US', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </div>
+                <div className="text-sm text-gray-600">
+                  {currentDateTime.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit' 
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -1965,6 +1978,12 @@ const SchoolAdminDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* User Switcher Modal */}
+      <UserSwitcherModal
+        isOpen={showUserSwitcherModal}
+        onClose={() => setShowUserSwitcherModal(false)}
+      />
 
     </div>
   );

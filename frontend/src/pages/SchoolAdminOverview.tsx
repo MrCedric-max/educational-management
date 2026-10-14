@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Users, School, BookOpen, GraduationCap, Download, Settings, TrendingUp, Calendar, UserPlus } from 'lucide-react';
+import { Users, School, BookOpen, GraduationCap, Download, Settings, TrendingUp, Calendar, UserPlus, ArrowRightLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import UserSwitcherModal from '../components/UserSwitcherModal';
 
 // Types and Interfaces for School Admin Overview
 interface SchoolSettings {
@@ -19,6 +20,7 @@ const SchoolAdminOverview: React.FC = () => {
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showUserSwitcherModal, setShowUserSwitcherModal] = useState(false);
 
 
   const schoolSettings: SchoolSettings = {
@@ -96,20 +98,40 @@ const SchoolAdminOverview: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-sm font-medium">
-                    {user?.fullName?.charAt(0) || 'A'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
-                  <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ')}</p>
+                <button
+                  onClick={() => setShowUserSwitcherModal(true)}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  title="Switch User Account"
+                >
+                  <ArrowRightLeft className="w-3.5 h-3.5" />
+                  <span>Switch User</span>
+                </button>
+
+                <div 
+                  onClick={() => setShowUserSwitcherModal(true)}
+                  className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+                  title="Click to switch user"
+                >
+                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center shadow">
+                    <span className="text-white text-sm font-medium">
+                      {user?.fullName?.charAt(0) || 'A'}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
+                    <p className="text-xs text-gray-500 capitalize">{user?.role?.replace('_', ' ')}</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <UserSwitcherModal
+        isOpen={showUserSwitcherModal}
+        onClose={() => setShowUserSwitcherModal(false)}
+      />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

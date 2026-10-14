@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { Link, useLocation } from 'react-router-dom';
 import {
   Home,
   BookOpen,
@@ -8,7 +7,6 @@ import {
   Users,
   BarChart3,
   Settings,
-  Bell,
   Search,
   Upload,
   Folder,
@@ -25,18 +23,17 @@ import {
   Download,
   Shield,
   Zap,
-  UserPlus,
   GraduationCap,
   LogOut,
   Calendar,
   CheckSquare,
   Award,
   Layers,
-  Sparkles,
   ArrowRightLeft
 } from 'lucide-react';
-import { useAuth, UserRole } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { useRealtime } from '../contexts/RealtimeContext';
+import UserSwitcherModal from './UserSwitcherModal';
 
 interface NavigationItem {
   path: string;
@@ -56,14 +53,13 @@ interface NavigationSection {
 }
 
 const SidebarNavigation: React.FC = () => {
-  const { user, school, logout, switchRole, language } = useAuth();
+  const { user, school, logout, language } = useAuth();
   const { getUnreadCount } = useRealtime();
   const location = useLocation();
-  const navigate = useNavigate();
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [showRoleSwitcher, setShowRoleSwitcher] = useState(false);
+  const [showUserSwitcherModal, setShowUserSwitcherModal] = useState(false);
 
   // Accordion state: open sections set
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -105,21 +101,6 @@ const SidebarNavigation: React.FC = () => {
       case 'parent': return 'bg-amber-500';
       default: return 'bg-gray-500';
     }
-  };
-
-  const handleRoleSwitch = (newRole: UserRole) => {
-    switchRole(newRole);
-    setShowRoleSwitcher(false);
-    toast.success(
-      language === 'fr'
-        ? `Profil activé: ${newRole.replace('_', ' ')}`
-        : `Switched profile to: ${newRole.replace('_', ' ')}`
-    );
-    // Redirect to default route of new role
-    if (newRole === 'super_admin') navigate('/');
-    else if (newRole === 'school_admin') navigate('/school-admin-overview');
-    else if (newRole === 'teacher') navigate('/teacher-dashboard');
-    else if (newRole === 'parent') navigate('/parent-portal');
   };
 
   // Structured Accordion Navigation Sections per User Role (Strict Separation)
@@ -406,54 +387,32 @@ const SidebarNavigation: React.FC = () => {
 
         {/* Footer: User Profile, Role Badge & Switcher */}
         <div className="p-3 border-t border-slate-800 bg-slate-950/70 space-y-2">
-          {/* Quick Role Switcher Toggle (Demo Mode) */}
+          {/* Quick User Switcher Button */}
           {!isCollapsed && (
-            <div className="relative">
-              <button
-                onClick={() => setShowRoleSwitcher(!showRoleSwitcher)}
-                className="w-full flex items-center justify-between px-2.5 py-1.5 bg-slate-800/80 hover:bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold border border-slate-700/60 transition-colors"
-                title="Switch Profile Perspective"
-              >
-                <div className="flex items-center space-x-2">
-                  <ArrowRightLeft className="h-3.5 w-3.5 text-indigo-400" />
-                  <span className="text-[11px] font-bold">
-                    {language === 'fr' ? 'Changer de Profil' : 'Switch Profile'}
-                  </span>
-                </div>
-                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${showRoleSwitcher ? 'rotate-180' : ''}`} />
-              </button>
-
-              {/* Role Dropdown */}
-              {showRoleSwitcher && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl overflow-hidden p-1 z-50 text-xs animate-in fade-in zoom-in-95 duration-150">
-                  <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700/60 mb-1">
-                    {language === 'fr' ? 'Profils de Démonstration' : 'Available Demo Profiles'}
-                  </div>
-                  {(['super_admin', 'school_admin', 'teacher', 'parent'] as UserRole[]).map((r) => {
-                    const isCurrent = user.role === r;
-                    return (
-                      <button
-                        key={r}
-                        onClick={() => handleRoleSwitch(r)}
-                        className={`w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between transition-colors ${
-                          isCurrent
-                            ? 'bg-indigo-600 text-white font-bold'
-                            : 'text-slate-300 hover:bg-slate-700'
-                        }`}
-                      >
-                        <span className="capitalize">{r.replace('_', ' ')}</span>
-                        {isCurrent && <span className="text-[9px] bg-white/20 px-1.5 rounded">Actif</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => setShowUserSwitcherModal(true)}
+              className="w-full flex items-center justify-between px-2.5 py-1.5 bg-indigo-950/50 hover:bg-indigo-900/60 text-indigo-200 hover:text-white rounded-lg text-xs font-semibold border border-indigo-700/50 transition-colors shadow-sm"
+              title="Switch between user accounts"
+            >
+              <div className="flex items-center space-x-2">
+                <ArrowRightLeft className="h-3.5 w-3.5 text-indigo-400" />
+                <span className="text-[11px] font-bold">
+                  {language === 'fr' ? 'Changer d\'Utilisateur' : 'Switch User'}
+                </span>
+              </div>
+              <span className="text-[9px] bg-indigo-800/80 px-1.5 py-0.2 rounded text-white font-mono">
+                Demo
+              </span>
+            </button>
           )}
 
           {/* User Card */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2 min-w-0">
+            <div 
+              onClick={() => setShowUserSwitcherModal(true)}
+              className="flex items-center space-x-2 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
+              title="Click to switch user"
+            >
               <div className={`h-8 w-8 rounded-full flex items-center justify-center text-white flex-shrink-0 ${getRoleColor(user.role)} shadow`}>
                 {getRoleIcon(user.role)}
               </div>
@@ -478,6 +437,12 @@ const SidebarNavigation: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* User Switcher Modal */}
+      <UserSwitcherModal
+        isOpen={showUserSwitcherModal}
+        onClose={() => setShowUserSwitcherModal(false)}
+      />
 
       {/* Mobile Backdrop */}
       {isMobileMenuOpen && (

@@ -38,6 +38,8 @@ interface AuthContextType {
   isLoading: boolean;
   hasPermission: (requiredRole: UserRole | UserRole[]) => boolean;
   switchRole: (role: UserRole) => void;
+  switchUser: (userId: string) => void;
+  availableUsers: User[];
   language: 'en' | 'fr';
   setLanguage: (language: 'en' | 'fr') => void;
 }
@@ -272,14 +274,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return ROLE_HIERARCHY[user.role] >= ROLE_HIERARCHY[requiredRole];
   };
 
-  const switchRole = (role: UserRole) => {
-    if (!user) return;
+  const switchUser = (userId: string) => {
+    const targetUser = mockUsers.find(u => u.id === userId);
+    if (!targetUser) return;
     
-    // Find a user with the requested role (for demo purposes)
+    setUser(targetUser);
+    localStorage.setItem('user', JSON.stringify(targetUser));
+    
+    if (targetUser.schoolId) {
+      const foundSchool = mockSchools.find(s => s.id === targetUser.schoolId);
+      if (foundSchool) {
+        setSchool(foundSchool);
+        localStorage.setItem('school', JSON.stringify(foundSchool));
+      }
+    } else {
+      setSchool(mockSchools[0]);
+      localStorage.setItem('school', JSON.stringify(mockSchools[0]));
+    }
+  };
+
+  const switchRole = (role: UserRole) => {
     const roleUser = mockUsers.find(u => u.role === role);
     if (roleUser) {
-      setUser(roleUser);
-      localStorage.setItem('user', JSON.stringify(roleUser));
+      switchUser(roleUser.id);
     }
   };
 
@@ -292,6 +309,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     isLoading,
     hasPermission,
     switchRole,
+    switchUser,
+    availableUsers: mockUsers,
     language,
     setLanguage: handleLanguageChange
   };
