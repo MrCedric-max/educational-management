@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Types
-export type UserRole = 'super_admin' | 'school_admin' | 'teacher' | 'student' | 'parent';
+export type UserRole = 'super_admin' | 'school_admin' | 'teacher' | 'parent';
 export type SchoolSystem = 'anglophone' | 'francophone';
 
 export interface User {
@@ -77,17 +77,6 @@ const mockUsers: User[] = [
     temporaryPassword: 'demo123'
   },
   {
-    id: '4',
-    email: 'emma.johnson@student.edu',
-    fullName: 'Emma Johnson (Student)',
-    role: 'student',
-    schoolId: 'sch_1',
-    classId: 'class_1',
-    isActive: true,
-    createdAt: new Date('2024-01-20'),
-    temporaryPassword: 'demo123'
-  },
-  {
     id: '5',
     email: 'parent@example.com',
     fullName: 'Parent User',
@@ -149,10 +138,9 @@ const mockSchools: School[] = [
 
 // Role hierarchy for permission checking
 const ROLE_HIERARCHY: Record<UserRole, number> = {
-  super_admin: 5,
-  school_admin: 4,
-  teacher: 3,
-  student: 2,
+  super_admin: 4,
+  school_admin: 3,
+  teacher: 2,
   parent: 1
 };
 

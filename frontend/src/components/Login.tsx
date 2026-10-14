@@ -37,7 +37,6 @@ const Login: React.FC = () => {
     { role: 'Super Admin', email: 'superadmin@system.com', password: 'demo123', description: 'Manage all schools, curriculum, and system-wide settings' },
     { role: 'School Admin', email: 'admin@stmarys.edu', password: 'demo123', description: 'Manage school staff, classes, timetables, and MINESEC reports' },
     { role: 'Teacher', email: 'john.doe@stmarys.edu', password: 'demo123', description: 'Lesson planning, quiz creation, attendance register, and gradebook' },
-    { role: 'Student', email: 'emma.johnson@student.edu', password: 'demo123', description: 'View timetable, learning materials, quizzes, and personal progress' },
     { role: 'Parent', email: 'parent@example.com', password: 'demo123', description: 'Monitor child progress, attendance hours, and official report cards' }
   ];
 

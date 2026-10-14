@@ -29,8 +29,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     // Redirect to each role's dedicated home portal
     if (user.role === 'parent') {
       return <Navigate to="/parent-portal" replace />;
-    } else if (user.role === 'student') {
-      return <Navigate to="/student-progress" replace />;
     } else if (user.role === 'teacher') {
       return <Navigate to="/teacher-dashboard" replace />;
     } else if (user.role === 'school_admin') {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Users, Plus, Search, UserPlus, Download, Upload, Settings, School, BookOpen, GraduationCap, CheckCircle, XCircle, Eye, Edit, BarChart3, Clock, FileText, TrendingUp, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useCameroonianEducation } from '../contexts/CameroonianEducationContext';
 
 // Types and Interfaces for School Admin Dashboard
@@ -61,6 +61,9 @@ const CLASS_NAME_MAPPING: Record<SchoolSystem, Record<string, string>> = {
 const SchoolAdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isClassesView = location.pathname === '/classes';
+
   const { 
     getClassDisplayName, 
     getAgeForLevel, 
@@ -69,7 +72,9 @@ const SchoolAdminDashboard: React.FC = () => {
     getSubjectsForSystem,
     getLevelFromClassName
   } = useCameroonianEducation();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'classes' | 'analytics' | 'reports' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'classes' | 'analytics' | 'reports' | 'settings'>(
+    isClassesView ? 'classes' : 'overview'
+  );
   const [selectedClass, setSelectedClass] = useState<any>(null);
   const [showClassModal, setShowClassModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -104,10 +109,10 @@ const SchoolAdminDashboard: React.FC = () => {
     capacity: 30
   });
 
-  // Reset component state when user changes
+  // Reset component state when user changes or path changes
   useEffect(() => {
-    // Reset all state to initial values when user changes
-    setActiveTab('overview');
+    // Set appropriate view tab
+    setActiveTab(isClassesView ? 'classes' : 'overview');
     setSelectedClass(null);
     setShowClassModal(false);
     setIsEditMode(false);
@@ -529,8 +534,14 @@ const SchoolAdminDashboard: React.FC = () => {
           
           {/* Centralized Title */}
           <div className="flex-1 text-center">
-            <h1 className="text-3xl font-bold text-gray-900">School Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">Manage users, classes, and school settings</p>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {isClassesView ? 'Classes & Student Rosters' : 'School Admin Dashboard'}
+            </h1>
+            <p className="text-gray-600 mt-1">
+              {isClassesView 
+                ? 'Manage classroom streams, capacities, and enrolled student lists'
+                : 'Manage users, classes, and school settings'}
+            </p>
           </div>
           
           {/* Current Date and Time - Right Side */}
@@ -557,79 +568,81 @@ const SchoolAdminDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow-md mb-6">
-        <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'overview'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <BarChart3 className="inline-block w-4 h-4 mr-2" />
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('users')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'users'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Users className="inline-block w-4 h-4 mr-2" />
-              Users
-            </button>
-            <button
-              onClick={() => setActiveTab('classes')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'classes'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <School className="inline-block w-4 h-4 mr-2" />
-              Classes
-            </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'analytics'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <BarChart3 className="inline-block w-4 h-4 mr-2" />
-              Analytics
-            </button>
-            <button
-              onClick={() => setActiveTab('reports')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'reports'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <FileText className="inline-block w-4 h-4 mr-2" />
-              Reports
-            </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                activeTab === 'settings'
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              <Settings className="inline-block w-4 h-4 mr-2" />
-              Settings
-            </button>
-          </nav>
+      {/* Navigation Tabs - Hidden on dedicated /classes view to avoid repetition with sidebar */}
+      {!isClassesView && (
+        <div className="bg-white rounded-lg shadow-md mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="flex space-x-8 px-6">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'overview'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <BarChart3 className="inline-block w-4 h-4 mr-2" />
+                Overview
+              </button>
+              <button
+                onClick={() => setActiveTab('users')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'users'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Users className="inline-block w-4 h-4 mr-2" />
+                Users
+              </button>
+              <button
+                onClick={() => setActiveTab('classes')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'classes'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <School className="inline-block w-4 h-4 mr-2" />
+                Classes
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'analytics'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <BarChart3 className="inline-block w-4 h-4 mr-2" />
+                Analytics
+              </button>
+              <button
+                onClick={() => setActiveTab('reports')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'reports'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <FileText className="inline-block w-4 h-4 mr-2" />
+                Reports
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                  activeTab === 'settings'
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Settings className="inline-block w-4 h-4 mr-2" />
+                Settings
+              </button>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Overview Tab */}
       {activeTab === 'overview' && (

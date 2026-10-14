@@ -60,7 +60,6 @@ const Navigation: React.FC = () => {
     if (role === 'super_admin') navigate('/');
     else if (role === 'school_admin') navigate('/school-admin-overview');
     else if (role === 'teacher') navigate('/teacher-dashboard');
-    else if (role === 'student') navigate('/student-progress');
     else if (role === 'parent') navigate('/parent-portal');
   };
 
@@ -69,7 +68,6 @@ const Navigation: React.FC = () => {
       case 'super_admin': return 'bg-red-100 text-red-800';
       case 'school_admin': return 'bg-blue-100 text-blue-800';
       case 'teacher': return 'bg-emerald-100 text-emerald-800';
-      case 'student': return 'bg-purple-100 text-purple-800';
       case 'parent': return 'bg-amber-100 text-amber-800';
       default: return 'bg-gray-100 text-gray-800';
     }
@@ -80,7 +78,6 @@ const Navigation: React.FC = () => {
       case 'super_admin': return <Settings className="h-4 w-4" />;
       case 'school_admin': return <School className="h-4 w-4" />;
       case 'teacher': return <BookOpen className="h-4 w-4" />;
-      case 'student': return <GraduationCap className="h-4 w-4" />;
       case 'parent': return <Users className="h-4 w-4" />;
       default: return <User className="h-4 w-4" />;
     }
@@ -126,13 +123,6 @@ const Navigation: React.FC = () => {
           { path: '/gradebook', label: language === 'fr' ? 'Bulletins' : 'Report Cards', icon: Award },
           { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar },
           { path: '/parent-quiz', label: language === 'fr' ? 'Quiz de Pratique' : 'Practice Quizzes', icon: HelpCircle }
-        ];
-
-      case 'student':
-        return [
-          { path: '/student-progress', label: language === 'fr' ? 'Mes Résultats' : 'My Progress', icon: BarChart3 },
-          { path: '/timetable', label: language === 'fr' ? 'Mon Emploi du Temps' : 'Timetable', icon: Calendar },
-          { path: '/quiz', label: language === 'fr' ? 'Quiz & Exercices' : 'Quizzes', icon: HelpCircle }
         ];
 
       default:
@@ -243,7 +233,7 @@ const Navigation: React.FC = () => {
                     
                     {showRoleMenu && (
                       <div className="bg-slate-900/60 py-1">
-                        {(['super_admin', 'school_admin', 'teacher', 'student', 'parent'] as UserRole[]).map((role) => (
+                        {(['super_admin', 'school_admin', 'teacher', 'parent'] as UserRole[]).map((role) => (
                           <button
                             key={role}
                             onClick={() => handleRoleSwitch(role)}

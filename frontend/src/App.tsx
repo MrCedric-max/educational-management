@@ -76,8 +76,6 @@ const AppContent: React.FC = () => {
         return '/school-admin-overview';
       case 'teacher':
         return '/teacher-dashboard';
-      case 'student':
-        return '/student-progress';
       case 'parent':
         return '/parent-portal';
       default:
@@ -230,7 +228,7 @@ const AppContent: React.FC = () => {
               </ProtectedRoute>
             } />
             <Route path="/timetable" element={
-              <ProtectedRoute allowedRoles={['school_admin', 'teacher', 'student', 'parent']}>
+              <ProtectedRoute allowedRoles={['school_admin', 'teacher', 'parent']}>
                 <TimetablePage />
               </ProtectedRoute>
             } />
@@ -240,18 +238,18 @@ const AppContent: React.FC = () => {
               </ProtectedRoute>
             } />
             <Route path="/quiz" element={
-              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+              <ProtectedRoute allowedRoles={['teacher']}>
                 <QuizTool />
               </ProtectedRoute>
             } />
             <Route path="/student-progress" element={
-              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+              <ProtectedRoute allowedRoles={['teacher']}>
                 <StudentProgress />
               </ProtectedRoute>
             } />
 
             {/* ============================================================= */}
-            {/* 5. PARENT & STUDENT EXCLUSIVE ROUTES                          */}
+            {/* 5. PARENT EXCLUSIVE ROUTES                                    */}
             {/* ============================================================= */}
             <Route path="/parent-portal" element={
               <ProtectedRoute allowedRoles={['parent']}>
@@ -266,11 +264,6 @@ const AppContent: React.FC = () => {
             <Route path="/parent-quiz" element={
               <ProtectedRoute allowedRoles={['parent']}>
                 <ParentQuizPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/curriculum" element={
-              <ProtectedRoute allowedRoles={['student']}>
-                <CurriculumBrowser />
               </ProtectedRoute>
             } />
 

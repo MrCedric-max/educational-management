@@ -92,7 +92,6 @@ const SidebarNavigation: React.FC = () => {
       case 'super_admin': return <Shield className="h-4 w-4" />;
       case 'school_admin': return <School className="h-4 w-4" />;
       case 'teacher': return <BookOpen className="h-4 w-4" />;
-      case 'student': return <GraduationCap className="h-4 w-4" />;
       case 'parent': return <Users className="h-4 w-4" />;
       default: return <Users className="h-4 w-4" />;
     }
@@ -103,7 +102,6 @@ const SidebarNavigation: React.FC = () => {
       case 'super_admin': return 'bg-red-500';
       case 'school_admin': return 'bg-blue-500';
       case 'teacher': return 'bg-emerald-500';
-      case 'student': return 'bg-purple-500';
       case 'parent': return 'bg-amber-500';
       default: return 'bg-gray-500';
     }
@@ -121,7 +119,6 @@ const SidebarNavigation: React.FC = () => {
     if (newRole === 'super_admin') navigate('/');
     else if (newRole === 'school_admin') navigate('/school-admin-overview');
     else if (newRole === 'teacher') navigate('/teacher-dashboard');
-    else if (newRole === 'student') navigate('/student-progress');
     else if (newRole === 'parent') navigate('/parent-portal');
   };
 
@@ -268,25 +265,6 @@ const SidebarNavigation: React.FC = () => {
               { path: '/gradebook', label: 'Official Report Cards', labelFr: 'Bulletins & Notes', icon: Award, badge: 'QR' },
               { path: '/timetable', label: 'Class Schedule', labelFr: 'Emploi du Temps', icon: Calendar },
               { path: '/parent-quiz', label: 'Home Practice Quizzes', labelFr: 'Quiz de Révision', icon: HelpCircle }
-            ]
-          }
-        ];
-
-      // =====================================================================
-      // 5. STUDENT (Élève)
-      // =====================================================================
-      case 'student':
-        return [
-          {
-            id: 'sec_student',
-            title: 'My School Space',
-            titleFr: 'Mon Espace Scolaire',
-            icon: GraduationCap,
-            items: [
-              { path: '/student-progress', label: 'My Marks & Progress', labelFr: 'Mes Notes & Cotes', icon: Award },
-              { path: '/timetable', label: 'My Class Schedule', labelFr: 'Mon Emploi du Temps', icon: Calendar },
-              { path: '/quiz', label: 'Quizzes & Exercises', labelFr: 'Quiz & Exercices', icon: HelpCircle },
-              { path: '/curriculum', label: 'Learning Materials', labelFr: 'Programme de Cours', icon: BookOpen }
             ]
           }
         ];
@@ -451,7 +429,7 @@ const SidebarNavigation: React.FC = () => {
                   <div className="px-2 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-700/60 mb-1">
                     {language === 'fr' ? 'Profils de Démonstration' : 'Available Demo Profiles'}
                   </div>
-                  {(['super_admin', 'school_admin', 'teacher', 'student', 'parent'] as UserRole[]).map((r) => {
+                  {(['super_admin', 'school_admin', 'teacher', 'parent'] as UserRole[]).map((r) => {
                     const isCurrent = user.role === r;
                     return (
                       <button

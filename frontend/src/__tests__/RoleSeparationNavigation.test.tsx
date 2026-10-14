@@ -237,4 +237,41 @@ describe('Strict Role Separation & Accordion Navigation', () => {
     fireEvent.click(sectionHeader);
     expect(screen.getByText(/Lesson Planner/i)).toBeInTheDocument();
   });
+
+  test('Student profile is completely removed from available roles', () => {
+    jest.spyOn(AuthContextModule, 'useAuth').mockReturnValue({
+      user: {
+        id: '1',
+        fullName: 'Super Administrator',
+        email: 'superadmin@system.com',
+        role: 'super_admin',
+        isActive: true,
+        createdAt: new Date()
+      },
+      school: null,
+      login: jest.fn(),
+      logout: jest.fn(),
+      isAuthenticated: true,
+      isLoading: false,
+      hasPermission: () => true,
+      switchRole: jest.fn(),
+      language: 'en',
+      setLanguage: jest.fn()
+    });
+
+    renderWithRouter(<SidebarNavigation />);
+
+    // Open role switcher popover
+    const switcherButton = screen.getByRole('button', { name: /Switch Profile/i });
+    fireEvent.click(switcherButton);
+
+    // Verify student profile option does NOT exist
+    expect(screen.queryByRole('button', { name: /^student$/i })).not.toBeInTheDocument();
+    
+    // Verify only the 4 allowed roles exist in demo switcher
+    expect(screen.getByRole('button', { name: /super admin/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /school admin/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /teacher/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /parent/i })).toBeInTheDocument();
+  });
 });
