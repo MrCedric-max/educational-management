@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import AttendanceManager from '../components/AttendanceManager';
 import GradebookManager from '../components/GradebookManager';
 import TimetableManager from '../components/TimetableManager';
@@ -19,7 +19,9 @@ jest.mock('../contexts/AuthContext', () => ({
 // Mock react-router-dom
 jest.mock('react-router-dom', () => ({
   useNavigate: () => jest.fn(),
-  Link: ({ children, to }: any) => <a href={to}>{children}</a>
+  Link: ({ children, to }: { children?: React.ReactNode; to: string }) => (
+    <a href={to}>{children}</a>
+  )
 }));
 
 describe('Feature Enhancements Suite', () => {
@@ -38,6 +40,25 @@ describe('Feature Enhancements Suite', () => {
     expect(screen.getByRole('button', { name: /Class Broadsheet & Ranking/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Official Term Report Card/i })).toBeInTheDocument();
     expect(screen.getByText(/Emma Johnson/i)).toBeInTheDocument();
+  });
+
+  test('GradebookManager displays MINESEC official report card and anti-fraud QR features', () => {
+    render(<GradebookManager />);
+    
+    // Switch to Report Card Tab
+    const reportCardTab = screen.getByRole('button', { name: /Official Term Report Card/i });
+    fireEvent.click(reportCardTab);
+
+    // Check MINESEC Bilingual Headers & Subject Groupings
+    expect(screen.getByText(/RÉPUBLIQUE DU CAMEROUN/i)).toBeInTheDocument();
+    expect(screen.getByText(/REPUBLIC OF CAMEROON/i)).toBeInTheDocument();
+    expect(screen.getByText(/MINISTÈRE DES ENSEIGNEMENTS SECONDAIRES/i)).toBeInTheDocument();
+    expect(screen.getByText(/GROUPE 1 : SCIENCES ET TECHNOLOGIES/i)).toBeInTheDocument();
+    expect(screen.getByText(/GROUPE 2 : LANGUES ET LITTÉRATURE/i)).toBeInTheDocument();
+    expect(screen.getByText(/GROUPE 3 : SCIENCES HUMAINES, ARTS ET SPORT/i)).toBeInTheDocument();
+
+    // Check Anti-fraud Verification button
+    expect(screen.getByText(/Vérifier QR Code Anti-Fraude/i)).toBeInTheDocument();
   });
 
   test('TimetableManager renders weekly timetable grid and periods', () => {
