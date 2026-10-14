@@ -1,27 +1,25 @@
-# Pre-Commit Checklist
+# Pre-Commit & Launch Checklist
 
-## 🔍 Before Making Any Changes
+## 🔍 Pre-Launch Validation
 
-### **1. System Validation**
-- [ ] Run: `powershell -File scripts/validate-setup.ps1`
-- [ ] Ensure no critical errors are reported
-- [ ] Check that all required files exist
+### **1. Automated Test Suites**
+- [ ] Frontend Unit Tests: `npm test` (all 4 suites, 12 tests must pass)
+- [ ] API & Security Tests: `npm run test:api` (all 20 endpoint & RBAC tests must pass)
+- [ ] Production Build: `npm run build` (builds `frontend/build` cleanly without errors)
+- [ ] Database Migrations: `npm run db:migrate` (14 tables verified)
 
 ### **2. Current State Check**
-- [ ] Verify which servers are currently running
-- [ ] Check if ports 3000 and 3001 are available
-- [ ] Ensure you're in the correct directory
-
-### **3. Backup (if making major changes)**
-- [ ] Run: `powershell -File scripts/backup-project.ps1`
-- [ ] Note the backup location for potential rollback
+- [ ] Backend is running and responds at: `http://localhost:3001/health`
+- [ ] Frontend loads and proxies via: `http://localhost:3000`
+- [ ] Git working tree is clean: `git status`
 
 ## 🚀 Before Starting Development
 
-### **1. Choose Your Method**
-- [ ] **Recommended**: Use `quick-start.bat` for first-time setup
-- [ ] **Alternative**: Use individual batch files (`start-backend.bat`, `start-frontend.bat`)
-- [ ] **Advanced**: Use PowerShell scripts or npm commands
+### **1. Universal NPM Scripts**
+- [ ] Run both servers concurrently: `npm run start` (or `npm run start:dev`)
+- [ ] Run backend only: `npm run start:backend`
+- [ ] Run frontend only: `npm run start:frontend`
+- [ ] Run all test suites: `npm test` and `npm run test:api`
 
 ### **2. Verify Setup**
 - [ ] Backend responds at: `http://localhost:3001/health`
