@@ -15,6 +15,7 @@
     "test:frontend": "npm test --prefix frontend -- --watchAll=false",
     "test:api": "node scripts/test-endpoints.js",
     "db:migrate": "node scripts/migrate-database.js",
+    "setup:env": "node scripts/setup-env.js",
     "start:win": "powershell -Command \"Start-Process powershell -ArgumentList '-Command', 'cd backend; node simple-server.js' -WindowStyle Minimized; Start-Process powershell -ArgumentList '-Command', 'cd frontend; npm start' -WindowStyle Minimized\"",
     "start:backend:win": "powershell -Command \"cd backend; node simple-server.js\"",
     "start:frontend:win": "powershell -Command \"cd frontend; npm start\""
