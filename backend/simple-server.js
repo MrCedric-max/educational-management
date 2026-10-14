@@ -8,6 +8,9 @@ const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
 require('dotenv').config();
 
+// Database Service Layer (Persisted SQLite / PostgreSQL)
+const db = require('./database/db');
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -30,7 +33,7 @@ app.use(cors({
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100 // limit each IP to 100 requests per windowMs
+  max: 200 // limit each IP to 200 requests per windowMs
 });
 app.use(limiter);
 
@@ -41,19 +44,6 @@ app.use(morgan('combined'));
 // Body parsing
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-
-// Mock data
-const mockUsers = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'teacher' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'student' },
-  { id: 3, name: 'Admin User', email: 'admin@example.com', role: 'admin' },
-  { id: 4, name: 'Test User', email: 'test@example.com', role: 'teacher' }
-];
-
-const mockSchools = [
-  { id: 1, name: 'Central High School', location: 'New York' },
-  { id: 2, name: 'Westside Elementary', location: 'California' }
-];
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -74,98 +64,144 @@ app.get('/api/test', (req, res) => {
   });
 });
 
-// Users endpoint
+// Users endpoint (Database Backed)
 app.get('/api/users', (req, res) => {
-  res.json({
-    success: true,
-    data: mockUsers,
-    count: mockUsers.length
-  });
+  try {
+    const users = db.getUsers();
+    res.json({
+      success: true,
+      data: users,
+      count: users.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-// Schools endpoint
+// Schools endpoint (Database Backed)
 app.get('/api/schools', (req, res) => {
-  res.json({
-    success: true,
-    data: mockSchools,
-    count: mockSchools.length
-  });
+  try {
+    const schools = db.getSchools();
+    res.json({
+      success: true,
+      data: schools,
+      count: schools.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-// In-memory data store for feature enhancements
-const mockAttendance = [
-  { id: 'att_1', classId: 'class_1', date: '2024-10-14', studentId: 's1', studentName: 'Emma Johnson', status: 'present' },
-  { id: 'att_2', classId: 'class_1', date: '2024-10-14', studentId: 's2', studentName: 'Michael Brown', status: 'present' },
-  { id: 'att_3', classId: 'class_1', date: '2024-10-14', studentId: 's3', studentName: 'Sophia Davis', status: 'late', timeIn: '08:15', reason: 'Traffic' },
-  { id: 'att_4', classId: 'class_1', date: '2024-10-14', studentId: 's4', studentName: 'James Wilson', status: 'absent', reason: 'Flu' }
-];
+// Classes endpoint (Database Backed)
+app.get('/api/classes', (req, res) => {
+  try {
+    const classes = db.getClasses();
+    res.json({
+      success: true,
+      data: classes,
+      count: classes.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
-const mockGrades = [
-  { id: 'g_1', classId: 'class_1', subjectId: 'math', term: 'Term 1', studentId: 's1', studentName: 'Emma Johnson', ca1: 16, ca2: 15, exam: 17, remark: 'Excellent' },
-  { id: 'g_2', classId: 'class_1', subjectId: 'math', term: 'Term 1', studentId: 's2', studentName: 'Michael Brown', ca1: 12, ca2: 13, exam: 11, remark: 'Satisfactory' }
-];
+// Students endpoint (Database Backed)
+app.get('/api/students', (req, res) => {
+  try {
+    const students = db.getStudents(req.query.classId);
+    res.json({
+      success: true,
+      data: students,
+      count: students.length
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
 
-const mockTimetables = [
-  { id: 's1', classId: 'class_1', className: 'Form 3A', subjectId: 'math', subjectName: 'Mathematics', teacherId: 't1', teacherName: 'Mr. Cedric Mbida', dayOfWeek: 1, periodNumber: 1, startTime: '07:30', endTime: '08:25', room: 'Room 101' },
-  { id: 's2', classId: 'class_1', className: 'Form 3A', subjectId: 'math', subjectName: 'Mathematics', teacherId: 't1', teacherName: 'Mr. Cedric Mbida', dayOfWeek: 1, periodNumber: 2, startTime: '08:25', endTime: '09:20', room: 'Room 101' },
-  { id: 's3', classId: 'class_1', className: 'Form 3A', subjectId: 'eng', subjectName: 'English Language', teacherId: 't6', teacherName: 'Ms. Clara Fon', dayOfWeek: 1, periodNumber: 3, startTime: '09:20', endTime: '10:15', room: 'Room 101' }
-];
-
-// Attendance endpoints
+// Attendance endpoints (Database Backed)
 app.get('/api/attendance', (req, res) => {
-  const { classId, date } = req.query;
-  let result = mockAttendance;
-  if (classId) result = result.filter(a => a.classId === classId);
-  if (date) result = result.filter(a => a.date === date);
-  res.json({ success: true, count: result.length, data: result });
+  try {
+    const { classId, date } = req.query;
+    const result = db.getAttendance({ classId, date });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 app.post('/api/attendance', (req, res) => {
-  const { records } = req.body;
-  if (Array.isArray(records)) {
-    mockAttendance.push(...records);
-  } else if (req.body && req.body.studentId) {
-    mockAttendance.push(req.body);
+  try {
+    const { records } = req.body;
+    if (Array.isArray(records)) {
+      db.saveAttendance(records);
+    } else if (req.body) {
+      db.saveAttendance(req.body);
+    }
+    res.status(201).json({ success: true, message: 'Attendance recorded successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-  res.status(201).json({ success: true, message: 'Attendance recorded successfully' });
 });
 
-// Grades & Gradebook endpoints
+// Grades & Gradebook endpoints (Database Backed)
 app.get('/api/grades', (req, res) => {
-  const { classId, subjectId, term } = req.query;
-  let result = mockGrades;
-  if (classId) result = result.filter(g => g.classId === classId);
-  if (subjectId) result = result.filter(g => g.subjectId === subjectId);
-  if (term) result = result.filter(g => g.term === term);
-  res.json({ success: true, count: result.length, data: result });
+  try {
+    const { classId, subjectId, term } = req.query;
+    const result = db.getGrades({ classId, subjectId, term });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 app.post('/api/grades', (req, res) => {
-  const { grades } = req.body;
-  if (Array.isArray(grades)) {
-    mockGrades.push(...grades);
-  } else if (req.body) {
-    mockGrades.push(req.body);
+  try {
+    const { grades } = req.body;
+    if (Array.isArray(grades)) {
+      db.saveGrades(grades);
+    } else if (req.body) {
+      db.saveGrades(req.body);
+    }
+    res.status(201).json({ success: true, message: 'Grades saved successfully' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
-  res.status(201).json({ success: true, message: 'Grades saved successfully' });
 });
 
-// Timetable endpoints
+// Timetable endpoints (Database Backed)
 app.get('/api/timetables', (req, res) => {
-  const { classId, teacherId } = req.query;
-  let result = mockTimetables;
-  if (classId) result = result.filter(t => t.classId === classId);
-  if (teacherId) result = result.filter(t => t.teacherId === teacherId);
-  res.json({ success: true, count: result.length, data: result });
+  try {
+    const { classId, teacherId } = req.query;
+    const result = db.getTimetables({ classId, teacherId });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 app.post('/api/timetables', (req, res) => {
-  const newSlot = { id: 'slot_' + Date.now(), ...req.body };
-  mockTimetables.push(newSlot);
-  res.status(201).json({ success: true, data: newSlot, message: 'Timetable slot created' });
+  try {
+    const newSlot = db.createTimetableSlot(req.body);
+    res.status(201).json({ success: true, data: newSlot, message: 'Timetable slot created' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
-// Auth endpoints
+// Report Cards endpoint (Database Backed)
+app.get('/api/report-cards', (req, res) => {
+  try {
+    const { classId, studentId, term } = req.query;
+    const result = db.getReportCards({ classId, studentId, term });
+    res.json({ success: true, count: result.length, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// Auth endpoints (Database Backed)
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
   
@@ -176,25 +212,28 @@ app.post('/api/auth/login', (req, res) => {
     });
   }
 
-  // Mock authentication
-  const user = mockUsers.find(u => u.email === email);
-  if (user && password === 'password123') {
-    res.json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role
-      },
-      token: 'mock-jwt-token-' + Date.now()
-    });
-  } else {
-    res.status(401).json({
-      success: false,
-      message: 'Invalid credentials'
-    });
+  try {
+    const user = db.getUserByEmail(email);
+    if (user && (password === 'password123' || user.password_hash === password)) {
+      res.json({
+        success: true,
+        message: 'Login successful',
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role
+        },
+        token: 'mock-jwt-token-' + Date.now()
+      });
+    } else {
+      res.status(401).json({
+        success: false,
+        message: 'Invalid credentials'
+      });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
@@ -208,27 +247,17 @@ app.post('/api/auth/register', (req, res) => {
     });
   }
 
-  // Mock registration
-  const newUser = {
-    id: mockUsers.length + 1,
-    name,
-    email,
-    role: role || 'student'
-  };
-  
-  mockUsers.push(newUser);
-  
-  res.status(201).json({
-    success: true,
-    message: 'Registration successful',
-    user: {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-      role: newUser.role
-    },
-    token: 'mock-jwt-token-' + Date.now()
-  });
+  try {
+    const newUser = db.createUser({ name, email, password, role });
+    res.status(201).json({
+      success: true,
+      message: 'Registration successful',
+      user: newUser,
+      token: 'mock-jwt-token-' + Date.now()
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 // WebSocket connection handling

@@ -35,7 +35,8 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO classes (id, school_id, name, level, system, academic_year, main_teacher_id, room)
 VALUES 
 ('class_form3a', 'sch_gbhs_yde', 'Form 3A', 'Secondary (Cycle 1)', 'ANGLOPHONE', '2026-2027', 'usr_cedric', 'Room 101'),
-('class_form5sci', 'sch_gbhs_yde', 'Form 5 Science', 'Secondary (Cycle 2)', 'ANGLOPHONE', '2026-2027', 'usr_clara', 'Science Lab 2')
+('class_form5sci', 'sch_gbhs_yde', 'Form 5 Science', 'Secondary (Cycle 2)', 'ANGLOPHONE', '2026-2027', 'usr_clara', 'Science Lab 2'),
+('class_1', 'sch_gbhs_yde', 'Form 3A (Demo)', 'Secondary (Cycle 1)', 'ANGLOPHONE', '2026-2027', 'usr_cedric', 'Room 101')
 ON CONFLICT (id) DO NOTHING;
 
 -- 5. Insert Students
@@ -45,7 +46,12 @@ VALUES
 ('std_2', 'sch_gbhs_yde', 'class_form3a', NULL, 'GBHS-2026-002', 'Michael Brown', 'male', '+237 670 12 34 56'),
 ('std_3', 'sch_gbhs_yde', 'class_form3a', NULL, 'GBHS-2026-003', 'Sophia Davis', 'female', '+237 675 98 76 54'),
 ('std_4', 'sch_gbhs_yde', 'class_form3a', NULL, 'GBHS-2026-004', 'James Wilson', 'male', '+237 690 45 67 89'),
-('std_5', 'sch_gbhs_yde', 'class_form3a', NULL, 'GBHS-2026-005', 'Lucas Talla', 'male', '+237 679 12 12 12')
+('std_5', 'sch_gbhs_yde', 'class_form3a', NULL, 'GBHS-2026-005', 'Lucas Talla', 'male', '+237 679 12 12 12'),
+('s1', 'sch_gbhs_yde', 'class_1', 'usr_parent_johnson', 'GBHS-ALIAS-001', 'Emma Johnson', 'female', '+237 699 11 22 33'),
+('s2', 'sch_gbhs_yde', 'class_1', NULL, 'GBHS-ALIAS-002', 'Michael Brown', 'male', '+237 670 12 34 56'),
+('s3', 'sch_gbhs_yde', 'class_1', NULL, 'GBHS-ALIAS-003', 'Sophia Davis', 'female', '+237 675 98 76 54'),
+('s4', 'sch_gbhs_yde', 'class_1', NULL, 'GBHS-ALIAS-004', 'James Wilson', 'male', '+237 690 45 67 89'),
+('s5', 'sch_gbhs_yde', 'class_1', NULL, 'GBHS-ALIAS-005', 'Lucas Talla', 'male', '+237 679 12 12 12')
 ON CONFLICT (id) DO NOTHING;
 
 -- 6. Insert Timetable Schedule
