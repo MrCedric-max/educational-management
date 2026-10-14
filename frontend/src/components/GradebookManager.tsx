@@ -1,15 +1,12 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import {
-  Award,
   BookOpen,
-  Calendar,
   CheckCircle2,
   Download,
   FileText,
   Layers,
   Printer,
-  QrCode,
   Save,
   ShieldCheck,
   X
@@ -123,7 +120,6 @@ export const GradebookManager: React.FC = () => {
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>('math');
   const [gradingScale, setGradingScale] = useState<'cameroon20' | 'anglophone100'>('cameroon20');
   const [selectedStudentForReport, setSelectedStudentForReport] = useState<string>('s1');
-  const [searchQuery, setSearchQuery] = useState<string>('');
   
   // Anti-Fraud QR Verification Modal
   const [showQrVerificationModal, setShowQrVerificationModal] = useState<boolean>(false);
@@ -310,7 +306,8 @@ export const GradebookManager: React.FC = () => {
 
   // Grouped subjects for MINESEC Bulletin
   const groupedSubjectDetails = useMemo(() => {
-    if (!reportStudentData) return { group1: [], group2: [], group3: [] };
+    const emptyGroup = { items: [] as any[], coefSum: 0, pointsSum: 0, avg: 0 };
+    if (!reportStudentData) return { group1: emptyGroup, group2: emptyGroup, group3: emptyGroup };
 
     const g1 = reportStudentData.subjectDetails.filter((s: any) => s.subject.group === 'group1');
     const g2 = reportStudentData.subjectDetails.filter((s: any) => s.subject.group === 'group2');
