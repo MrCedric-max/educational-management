@@ -59,7 +59,7 @@ const CLASS_NAME_MAPPING: Record<SchoolSystem, Record<string, string>> = {
 };
 
 const SchoolAdminDashboard: React.FC = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { 
     getClassDisplayName, 
@@ -67,7 +67,6 @@ const SchoolAdminDashboard: React.FC = () => {
     getLearningObjectives, 
     getAssessmentCriteria,
     getSubjectsForSystem,
-    getTerm,
     getLevelFromClassName
   } = useCameroonianEducation();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'classes' | 'analytics' | 'reports' | 'settings'>('overview');

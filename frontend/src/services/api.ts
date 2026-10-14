@@ -426,7 +426,7 @@ export const enhancedQuizzesApi = {
 
 // Export the API client for direct use if needed
 export { apiClient };
-export default {
+const apiService = {
   auth: authApi,
   users: usersApi,
   schools: schoolsApi,
@@ -459,3 +459,5 @@ export default {
   getProgressAnalytics: dashboardApi.getStats,
   getLessonAnalytics: dashboardApi.getStats
 };
+
+export default apiService;

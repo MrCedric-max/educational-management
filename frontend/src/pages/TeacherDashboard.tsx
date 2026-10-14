@@ -4,7 +4,6 @@ import {
   Plus, Eye, Settings, Globe, Clock, Target,
   UserPlus, Edit, Calendar, Award, CheckSquare
 } from 'lucide-react';
-import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import AttendanceManager from '../components/AttendanceManager';
@@ -61,7 +60,7 @@ interface ProgressData {
 }
 
 const TeacherDashboard: React.FC = () => {
-  const { logout, user, language, setLanguage } = useAuth();
+  const { user, language, setLanguage } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<'overview' | 'classes' | 'students' | 'attendance' | 'gradebook' | 'timetable' | 'quizzes' | 'lessons' | 'progress' | 'reports' | 'settings'>('overview');
   const [selectedClass, setSelectedClass] = useState<string>('');
