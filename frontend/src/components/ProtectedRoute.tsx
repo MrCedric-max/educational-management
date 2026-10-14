@@ -11,19 +11,22 @@ interface ProtectedRouteProps {
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   allowedRoles, 
-  fallbackPath = '/login' 
+  fallbackPath
 }) => {
-  const { user, hasPermission } = useAuth();
+  const { user } = useAuth();
 
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // Check if user has permission for any of the allowed roles
-  const hasAccess = allowedRoles.some(role => hasPermission(role));
+  // Strict role check: user's role must be explicitly in allowedRoles
+  const hasAccess = allowedRoles.includes(user.role);
 
   if (!hasAccess) {
-    // Redirect to appropriate fallback based on user role
+    if (fallbackPath) {
+      return <Navigate to={fallbackPath} replace />;
+    }
+    // Redirect to each role's dedicated home portal
     if (user.role === 'parent') {
       return <Navigate to="/parent-portal" replace />;
     } else if (user.role === 'student') {
@@ -31,7 +34,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     } else if (user.role === 'teacher') {
       return <Navigate to="/teacher-dashboard" replace />;
     } else if (user.role === 'school_admin') {
-      return <Navigate to="/school-admin" replace />;
+      return <Navigate to="/school-admin-overview" replace />;
     } else {
       return <Navigate to="/" replace />;
     }

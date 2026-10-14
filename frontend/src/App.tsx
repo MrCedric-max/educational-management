@@ -56,8 +56,8 @@ const AppContent: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Chargement / Loading...</p>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ const AppContent: React.FC = () => {
     return <Login />;
   }
 
-  // Redirect authenticated users to their appropriate dashboard based on role
+  // Redirect authenticated users to their dedicated portal based on strict role separation
   const getDefaultRoute = (userRole: string) => {
     switch (userRole) {
       case 'super_admin':
@@ -91,170 +91,192 @@ const AppContent: React.FC = () => {
       
       <main className="min-h-screen bg-gray-50 lg:ml-64">
         <MobileDashboard>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={
-            <ProtectedRoute allowedRoles={['super_admin']}>
-              <Classes />
-            </ProtectedRoute>
-          } />
-          <Route path="/school-admin" element={
-            <ProtectedRoute allowedRoles={['school_admin']}>
-              <StudentRoster />
-            </ProtectedRoute>
-          } />
-          <Route path="/school-admin-overview" element={
-            <ProtectedRoute allowedRoles={['school_admin']}>
-              <SchoolAdminOverview />
-            </ProtectedRoute>
-          } />
-          <Route path="/school-admin-users" element={
-            <ProtectedRoute allowedRoles={['school_admin']}>
-              <SchoolAdminUsers />
-            </ProtectedRoute>
-          } />
-          <Route path="/classes" element={
-            <ProtectedRoute allowedRoles={['school_admin']}>
-              <StudentRoster />
-            </ProtectedRoute>
-          } />
-          <Route path="/teacher-dashboard" element={
-            <ProtectedRoute allowedRoles={['teacher']}>
-              <TeacherDashboard />
-            </ProtectedRoute>
-          } />
-          <Route path="/attendance" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <AttendancePage />
-            </ProtectedRoute>
-          } />
-          <Route path="/gradebook" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <GradebookPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/timetable" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher', 'student', 'parent']}>
-              <TimetablePage />
-            </ProtectedRoute>
-          } />
-          <Route path="/student-progress" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher', 'student']}>
-              <StudentProgress />
-            </ProtectedRoute>
-          } />
-          <Route path="/lesson-planner" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <SystemAwareLessonPlanner />
-            </ProtectedRoute>
-          } />
-          <Route path="/monthly-reports" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <MonthlyReports />
-            </ProtectedRoute>
-          } />
-          <Route path="/progress-insights" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <ProgressInsights />
-            </ProtectedRoute>
-          } />
-          <Route path="/analytics" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <AnalyticsPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/file-manager" element={
-            <ProtectedRoute allowedRoles={['super_admin']}>
-              <FileManager />
-            </ProtectedRoute>
-          } />
-          <Route path="/feature-management" element={
-            <ProtectedRoute allowedRoles={['super_admin']}>
-              <FeatureManagement />
-            </ProtectedRoute>
-          } />
-          <Route path="/anglophone-curriculum" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <AnglophoneCurriculumBrowser />
-            </ProtectedRoute>
-          } />
-                                <Route path="/export-center" element={
-                        <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-                          <ExportCenter />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/curriculum" element={
-                        <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher', 'student', 'parent']}>
-                          <CurriculumBrowser />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/content-library" element={
-  <ProtectedRoute allowedRoles={['super_admin']}>
-    <ContentLibraryManager />
-  </ProtectedRoute>
-} />
-<Route path="/content-search" element={
-  <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-    <AdvancedContentSearch />
-  </ProtectedRoute>
-} />
-<Route path="/bulk-upload" element={
-  <ProtectedRoute allowedRoles={['super_admin']}>
-    <BulkUploadManager />
-  </ProtectedRoute>
-} />
-                      <Route path="/parent-dashboard" element={
-                        <ProtectedRoute allowedRoles={['parent']}>
-                          <ParentDashboard />
-                        </ProtectedRoute>
-                      } />
-                      <Route path="/parent-portal" element={
-                        <ProtectedRoute allowedRoles={['parent']}>
-                          <ParentPortal />
-                        </ProtectedRoute>
-                      } />
-          <Route path="/parent-quiz" element={
-            <ProtectedRoute allowedRoles={['parent']}>
-              <ParentQuizPage />
-            </ProtectedRoute>
-          } />
-          <Route path="/quiz" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher', 'student', 'parent']}>
-              <QuizTool />
-            </ProtectedRoute>
-          } />
-          <Route path="/global-search" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <GlobalSearch />
-            </ProtectedRoute>
-          } />
-          <Route path="/realtime-demo" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <RealtimeDemo />
-            </ProtectedRoute>
-          } />
-          <Route path="/advanced-analytics" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <AdvancedAnalytics />
-            </ProtectedRoute>
-          } />
-          <Route path="/bulk-operations" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <BulkOperationsManager />
-            </ProtectedRoute>
-          } />
-          <Route path="/performance-monitor" element={
-            <ProtectedRoute allowedRoles={['super_admin']}>
-              <PerformanceMonitor />
-            </ProtectedRoute>
-          } />
-          <Route path="/api-test" element={
-            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
-              <ApiIntegrationTest />
-            </ProtectedRoute>
-          } />
-          <Route path="*" element={<Navigate to={getDefaultRoute(user?.role || 'super_admin')} replace />} />
-        </Routes>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+
+            {/* ============================================================= */}
+            {/* 1. SUPER ADMIN EXCLUSIVE ROUTES                               */}
+            {/* ============================================================= */}
+            <Route path="/" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <Classes />
+              </ProtectedRoute>
+            } />
+            <Route path="/global-search" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <GlobalSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/content-library" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <ContentLibraryManager />
+              </ProtectedRoute>
+            } />
+            <Route path="/content-search" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <AdvancedContentSearch />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-upload" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <BulkUploadManager />
+              </ProtectedRoute>
+            } />
+            <Route path="/file-manager" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <FileManager />
+              </ProtectedRoute>
+            } />
+            <Route path="/feature-management" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <FeatureManagement />
+              </ProtectedRoute>
+            } />
+            <Route path="/performance-monitor" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <PerformanceMonitor />
+              </ProtectedRoute>
+            } />
+            <Route path="/bulk-operations" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <BulkOperationsManager />
+              </ProtectedRoute>
+            } />
+            <Route path="/realtime-demo" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <RealtimeDemo />
+              </ProtectedRoute>
+            } />
+            <Route path="/advanced-analytics" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <AdvancedAnalytics />
+              </ProtectedRoute>
+            } />
+            <Route path="/api-test" element={
+              <ProtectedRoute allowedRoles={['super_admin']}>
+                <ApiIntegrationTest />
+              </ProtectedRoute>
+            } />
+
+            {/* ============================================================= */}
+            {/* 2. SCHOOL ADMIN EXCLUSIVE ROUTES                              */}
+            {/* ============================================================= */}
+            <Route path="/school-admin-overview" element={
+              <ProtectedRoute allowedRoles={['school_admin']}>
+                <SchoolAdminOverview />
+              </ProtectedRoute>
+            } />
+            <Route path="/school-admin" element={
+              <ProtectedRoute allowedRoles={['school_admin']}>
+                <SchoolAdminOverview />
+              </ProtectedRoute>
+            } />
+            <Route path="/school-admin-users" element={
+              <ProtectedRoute allowedRoles={['school_admin']}>
+                <SchoolAdminUsers />
+              </ProtectedRoute>
+            } />
+            <Route path="/classes" element={
+              <ProtectedRoute allowedRoles={['school_admin']}>
+                <StudentRoster />
+              </ProtectedRoute>
+            } />
+            <Route path="/analytics" element={
+              <ProtectedRoute allowedRoles={['school_admin']}>
+                <AnalyticsPage />
+              </ProtectedRoute>
+            } />
+
+            {/* ============================================================= */}
+            {/* 3. TEACHER EXCLUSIVE ROUTES                                   */}
+            {/* ============================================================= */}
+            <Route path="/teacher-dashboard" element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <TeacherDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/lesson-planner" element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <SystemAwareLessonPlanner />
+              </ProtectedRoute>
+            } />
+            <Route path="/progress-insights" element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <ProgressInsights />
+              </ProtectedRoute>
+            } />
+            <Route path="/export-center" element={
+              <ProtectedRoute allowedRoles={['teacher']}>
+                <ExportCenter />
+              </ProtectedRoute>
+            } />
+            <Route path="/anglophone-curriculum" element={
+              <ProtectedRoute allowedRoles={['super_admin', 'teacher']}>
+                <AnglophoneCurriculumBrowser />
+              </ProtectedRoute>
+            } />
+
+            {/* ============================================================= */}
+            {/* 4. SHARED ACADEMIC & VIE SCOLAIRE ROUTES                      */}
+            {/* ============================================================= */}
+            <Route path="/attendance" element={
+              <ProtectedRoute allowedRoles={['school_admin', 'teacher']}>
+                <AttendancePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/gradebook" element={
+              <ProtectedRoute allowedRoles={['school_admin', 'teacher', 'parent']}>
+                <GradebookPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/timetable" element={
+              <ProtectedRoute allowedRoles={['school_admin', 'teacher', 'student', 'parent']}>
+                <TimetablePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/monthly-reports" element={
+              <ProtectedRoute allowedRoles={['school_admin', 'teacher']}>
+                <MonthlyReports />
+              </ProtectedRoute>
+            } />
+            <Route path="/quiz" element={
+              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+                <QuizTool />
+              </ProtectedRoute>
+            } />
+            <Route path="/student-progress" element={
+              <ProtectedRoute allowedRoles={['teacher', 'student']}>
+                <StudentProgress />
+              </ProtectedRoute>
+            } />
+
+            {/* ============================================================= */}
+            {/* 5. PARENT & STUDENT EXCLUSIVE ROUTES                          */}
+            {/* ============================================================= */}
+            <Route path="/parent-portal" element={
+              <ProtectedRoute allowedRoles={['parent']}>
+                <ParentPortal />
+              </ProtectedRoute>
+            } />
+            <Route path="/parent-dashboard" element={
+              <ProtectedRoute allowedRoles={['parent']}>
+                <ParentDashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/parent-quiz" element={
+              <ProtectedRoute allowedRoles={['parent']}>
+                <ParentQuizPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/curriculum" element={
+              <ProtectedRoute allowedRoles={['student']}>
+                <CurriculumBrowser />
+              </ProtectedRoute>
+            } />
+
+            {/* Catch-all fallback */}
+            <Route path="*" element={<Navigate to={getDefaultRoute(user?.role || 'super_admin')} replace />} />
+          </Routes>
         </MobileDashboard>
       </main>
       
@@ -263,32 +285,32 @@ const AppContent: React.FC = () => {
   );
 };
 
-// Main App Component with Auth Provider
+// Main App Component with Providers
 function App() {
   return (
     <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-    <AuthProvider>
+      <AuthProvider>
         <ApiProvider>
-        <CameroonianEducationProvider>
-          <CameroonianCurriculumProvider>
-        <ContentLibraryProvider>
-        <FileManagementProvider>
-        <FeatureManagementProvider>
-        <AnglophoneCurriculumProvider>
-        <RealtimeProvider>
-        <ErrorProvider>
-        <AppContent />
-        </ErrorProvider>
-        </RealtimeProvider>
-        </AnglophoneCurriculumProvider>
-        </FeatureManagementProvider>
-        </FileManagementProvider>
-        </ContentLibraryProvider>
-          </CameroonianCurriculumProvider>
-        </CameroonianEducationProvider>
+          <CameroonianEducationProvider>
+            <CameroonianCurriculumProvider>
+              <ContentLibraryProvider>
+                <FileManagementProvider>
+                  <FeatureManagementProvider>
+                    <AnglophoneCurriculumProvider>
+                      <RealtimeProvider>
+                        <ErrorProvider>
+                          <AppContent />
+                        </ErrorProvider>
+                      </RealtimeProvider>
+                    </AnglophoneCurriculumProvider>
+                  </FeatureManagementProvider>
+                </FileManagementProvider>
+              </ContentLibraryProvider>
+            </CameroonianCurriculumProvider>
+          </CameroonianEducationProvider>
         </ApiProvider>
       </AuthProvider>
-      </Router>
+    </Router>
   );
 }
 

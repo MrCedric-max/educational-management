@@ -77,6 +77,17 @@ const mockUsers: User[] = [
     temporaryPassword: 'demo123'
   },
   {
+    id: '4',
+    email: 'emma.johnson@student.edu',
+    fullName: 'Emma Johnson (Student)',
+    role: 'student',
+    schoolId: 'sch_1',
+    classId: 'class_1',
+    isActive: true,
+    createdAt: new Date('2024-01-20'),
+    temporaryPassword: 'demo123'
+  },
+  {
     id: '5',
     email: 'parent@example.com',
     fullName: 'Parent User',
@@ -277,7 +288,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!user) return;
     
     // Find a user with the requested role (for demo purposes)
-    const roleUser = mockUsers.find(u => u.role === role && u.schoolId === user.schoolId);
+    const roleUser = mockUsers.find(u => u.role === role);
     if (roleUser) {
       setUser(roleUser);
       localStorage.setItem('user', JSON.stringify(roleUser));
