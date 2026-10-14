@@ -43,6 +43,11 @@ function getUserByEmail(email) {
 
 function createUser({ name, email, password, role }) {
   const db = getDb();
+  const existing = db.prepare('SELECT id, full_name as name, email, role FROM users WHERE email = ?').get(email);
+  if (existing) {
+    return existing;
+  }
+
   const id = 'usr_' + Date.now();
   const passwordHash = password || '$2a$10$defaultDemoHash';
   db.prepare(`
