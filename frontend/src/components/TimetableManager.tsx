@@ -3,7 +3,6 @@ import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import {
   Calendar,
-  Clock,
   Plus,
   Trash2,
   Edit,
@@ -12,11 +11,7 @@ import {
   AlertTriangle,
   BookOpen,
   User,
-  MapPin,
-  Sparkles,
-  Layers,
-  ChevronRight,
-  Filter
+  MapPin
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { TimetableSlot } from '../types/database';

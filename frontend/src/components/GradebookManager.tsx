@@ -3,22 +3,11 @@ import toast from 'react-hot-toast';
 import {
   Award,
   BookOpen,
-  Calendar,
-  CheckCircle,
   Download,
-  FileSpreadsheet,
   FileText,
-  Filter,
-  GraduationCap,
   Layers,
   Printer,
-  Save,
-  Search,
-  Sparkles,
-  TrendingDown,
-  TrendingUp,
-  User,
-  Users
+  Save
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 

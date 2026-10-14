@@ -1,24 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import toast from 'react-hot-toast';
 import {
-  Calendar,
   CheckCircle,
   XCircle,
   Clock,
   AlertCircle,
   Users,
   Search,
-  Filter,
   Download,
   Printer,
   Send,
   History,
   Save,
   CheckCheck,
-  RotateCcw,
-  UserCheck,
-  UserX,
-  FileSpreadsheet
+  UserX
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 

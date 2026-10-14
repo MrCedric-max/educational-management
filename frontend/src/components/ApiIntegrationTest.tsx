@@ -15,7 +15,7 @@ const ApiIntegrationTest: React.FC = () => {
     try {
       // Test 1: Health Check
       try {
-        const healthResponse = await fetch('http://localhost:3001/health');
+        const healthResponse = await fetch('/health');
         const healthData = await healthResponse.json();
         results.push({
           test: 'Health Check',
@@ -34,7 +34,7 @@ const ApiIntegrationTest: React.FC = () => {
 
       // Test 2: API Test Endpoint
       try {
-        const testResponse = await fetch('http://localhost:3001/api/test');
+        const testResponse = await fetch('/api/test');
         const testData = await testResponse.json();
         results.push({
           test: 'API Test',
@@ -53,7 +53,7 @@ const ApiIntegrationTest: React.FC = () => {
 
       // Test 3: Users Endpoint
       try {
-        const usersResponse = await fetch('http://localhost:3001/api/users');
+        const usersResponse = await fetch('/api/users');
         const usersData = await usersResponse.json();
         results.push({
           test: 'Users API',
@@ -72,7 +72,7 @@ const ApiIntegrationTest: React.FC = () => {
 
       // Test 4: Login API
       try {
-        const loginResponse = await fetch('http://localhost:3001/api/auth/login', {
+        const loginResponse = await fetch('/api/auth/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

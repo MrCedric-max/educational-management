@@ -26,7 +26,7 @@ import {
 import databaseService from './database';
 
 // Base API configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || '/api';
 const API_TIMEOUT = 10000; // 10 seconds
 
 // HTTP client with error handling
