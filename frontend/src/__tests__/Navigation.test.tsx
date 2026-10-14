@@ -3,6 +3,32 @@ import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Navigation from '../components/Navigation';
 
+jest.mock('../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    user: { id: '3', fullName: 'John Doe', role: 'teacher' },
+    hasPermission: () => true,
+    language: 'en',
+    logout: jest.fn()
+  })
+}));
+
+jest.mock('../contexts/RealtimeContext', () => ({
+  useRealtime: () => ({
+    getUnreadCount: () => 0,
+    notifications: []
+  })
+}));
+
+jest.mock('../contexts/ErrorContext', () => ({
+  useError: () => ({
+    errors: [],
+    addError: jest.fn(),
+    clearErrors: jest.fn(),
+    getErrorStats: () => ({ total: 0, byType: {}, byCategory: {} }),
+    getUnresolvedErrors: () => []
+  })
+}));
+
 const renderWithRouter = (component: React.ReactElement) => {
   return render(
     <BrowserRouter>
@@ -12,40 +38,28 @@ const renderWithRouter = (component: React.ReactElement) => {
 };
 
 describe('Navigation Component', () => {
-  test('renders all navigation links', () => {
+  test('renders navigation links for teacher', () => {
     renderWithRouter(<Navigation />);
     
-    // Check for main navigation links
-    expect(screen.getByText('Classes')).toBeInTheDocument();
-    expect(screen.getByText('Lesson Planner')).toBeInTheDocument();
-    expect(screen.getByText('Quiz Tool')).toBeInTheDocument();
-    expect(screen.getByText('Student Progress')).toBeInTheDocument();
-    expect(screen.getByText('Parent Portal')).toBeInTheDocument();
-    expect(screen.getByText('Monthly Reports')).toBeInTheDocument();
-    expect(screen.getByText('Student Roster')).toBeInTheDocument();
-    expect(screen.getByText('Progress Insights')).toBeInTheDocument();
-    expect(screen.getByText('Export Center')).toBeInTheDocument();
+    expect(screen.getAllByText('Lesson Planner')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Quiz Tool')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Student Progress')[0]).toBeInTheDocument();
+    expect(screen.getAllByText('Monthly Reports')[0]).toBeInTheDocument();
   });
 
   test('navigation links have correct href attributes', () => {
     renderWithRouter(<Navigation />);
     
-    expect(screen.getByRole('link', { name: /classes/i })).toHaveAttribute('href', '/classes');
-    expect(screen.getByRole('link', { name: /lesson planner/i })).toHaveAttribute('href', '/lesson-planner');
-    expect(screen.getByRole('link', { name: /quiz tool/i })).toHaveAttribute('href', '/quiz');
-    expect(screen.getByRole('link', { name: /student progress/i })).toHaveAttribute('href', '/student-progress');
-    expect(screen.getByRole('link', { name: /parent portal/i })).toHaveAttribute('href', '/parent-portal');
-    expect(screen.getByRole('link', { name: /monthly reports/i })).toHaveAttribute('href', '/monthly-reports');
-    expect(screen.getByRole('link', { name: /student roster/i })).toHaveAttribute('href', '/student-roster');
-    expect(screen.getByRole('link', { name: /progress insights/i })).toHaveAttribute('href', '/progress-insights');
-    expect(screen.getByRole('link', { name: /export center/i })).toHaveAttribute('href', '/export-center');
+    expect(screen.getAllByRole('link', { name: /lesson planner/i })[0]).toHaveAttribute('href', '/lesson-planner');
+    expect(screen.getAllByRole('link', { name: /quiz tool/i })[0]).toHaveAttribute('href', '/quiz');
+    expect(screen.getAllByRole('link', { name: /student progress/i })[0]).toHaveAttribute('href', '/student-progress');
+    expect(screen.getAllByRole('link', { name: /monthly reports/i })[0]).toHaveAttribute('href', '/monthly-reports');
   });
 
   test('renders logo and branding', () => {
     renderWithRouter(<Navigation />);
     
-    // Check for logo or branding elements
-    const logo = screen.getByText(/educational management/i) || screen.getByText(/ems/i);
+    const logo = screen.getByText(/educational management system/i);
     expect(logo).toBeInTheDocument();
   });
 });

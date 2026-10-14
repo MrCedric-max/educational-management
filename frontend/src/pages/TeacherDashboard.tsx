@@ -2,11 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { 
   Users, BookOpen, BarChart3, FileText, TrendingUp, Download, 
   Plus, Eye, Settings, Globe, Clock, Target,
-  UserPlus, Edit
+  UserPlus, Edit, Calendar, Award, CheckSquare
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import AttendanceManager from '../components/AttendanceManager';
+import GradebookManager from '../components/GradebookManager';
+import TimetableManager from '../components/TimetableManager';
 
 // Types and Interfaces
 interface Student {
@@ -60,7 +63,7 @@ interface ProgressData {
 const TeacherDashboard: React.FC = () => {
   const { logout, user, language, setLanguage } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'overview' | 'classes' | 'students' | 'quizzes' | 'lessons' | 'progress' | 'reports' | 'settings'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'classes' | 'students' | 'attendance' | 'gradebook' | 'timetable' | 'quizzes' | 'lessons' | 'progress' | 'reports' | 'settings'>('overview');
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
@@ -291,6 +294,9 @@ const TeacherDashboard: React.FC = () => {
             <nav className="-mb-px flex space-x-8 overflow-x-auto">
               {[
                 { id: 'overview', label: language === 'en' ? 'Overview' : 'Aperçu', icon: BarChart3 },
+                { id: 'attendance', label: language === 'en' ? 'Attendance' : 'Présences', icon: CheckSquare },
+                { id: 'gradebook', label: language === 'en' ? 'Gradebook' : 'Notes & Bulletins', icon: Award },
+                { id: 'timetable', label: language === 'en' ? 'Timetable' : 'Emploi du Temps', icon: Calendar },
                 { id: 'classes', label: language === 'en' ? 'Classes' : 'Classes', icon: Users },
                 { id: 'students', label: language === 'en' ? 'Students' : 'Étudiants', icon: UserPlus },
                 { id: 'quizzes', label: language === 'en' ? 'Quizzes' : 'Quiz', icon: Target },
@@ -521,6 +527,24 @@ const TeacherDashboard: React.FC = () => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'attendance' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <AttendanceManager />
+          </div>
+        )}
+
+        {activeTab === 'gradebook' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <GradebookManager />
+          </div>
+        )}
+
+        {activeTab === 'timetable' && (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+            <TimetableManager />
           </div>
         )}
 

@@ -34,7 +34,9 @@ import {
   Clock,
   PieChart,
   Calendar,
-  Globe
+  Globe,
+  CheckSquare,
+  Award
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useRealtime } from '../contexts/RealtimeContext';
@@ -92,6 +94,9 @@ const SidebarNavigation: React.FC = () => {
     // Super Admin items
     if (hasPermission('super_admin') && user.role === 'super_admin') {
       roleSpecificItems.push(
+        { path: '/attendance', label: language === 'fr' ? 'Présences' : 'Attendance', icon: CheckSquare, roles: ['super_admin'] },
+        { path: '/gradebook', label: language === 'fr' ? 'Notes & Bulletins' : 'Gradebook & Reports', icon: Award, roles: ['super_admin'] },
+        { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar, roles: ['super_admin'] },
         { path: '/global-search', label: language === 'fr' ? 'Recherche Globale' : 'Global Search', icon: Search, roles: ['super_admin'] },
         { path: '/realtime-demo', label: language === 'fr' ? 'Démo Temps Réel' : 'Real-time Demo', icon: Activity, roles: ['super_admin'] },
         { path: '/advanced-analytics', label: language === 'fr' ? 'Analyses Avancées' : 'Advanced Analytics', icon: BarChart3, roles: ['super_admin'] },
@@ -110,6 +115,9 @@ const SidebarNavigation: React.FC = () => {
     // School Admin items
     if (hasPermission('school_admin') && user.role === 'school_admin') {
       roleSpecificItems.push(
+        { path: '/attendance', label: language === 'fr' ? 'Présences' : 'Attendance', icon: CheckSquare, roles: ['school_admin'] },
+        { path: '/gradebook', label: language === 'fr' ? 'Notes & Bulletins' : 'Gradebook & Reports', icon: Award, roles: ['school_admin'] },
+        { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar, roles: ['school_admin'] },
         { path: '/school-admin', label: language === 'fr' ? 'Tableau de Bord' : 'Overview', icon: Home, roles: ['school_admin'] },
         { path: '/school-admin-users', label: language === 'fr' ? 'Utilisateurs' : 'Users', icon: Users, roles: ['school_admin'] },
         { path: '/classes', label: language === 'fr' ? 'Classes' : 'Classes', icon: GraduationCap, roles: ['school_admin'] },
@@ -127,6 +135,9 @@ const SidebarNavigation: React.FC = () => {
     // Teacher items (only if not super admin)
     if (hasPermission('teacher') && user.role === 'teacher') {
       roleSpecificItems.push(
+        { path: '/attendance', label: language === 'fr' ? 'Présences' : 'Attendance', icon: CheckSquare, roles: ['teacher'] },
+        { path: '/gradebook', label: language === 'fr' ? 'Notes & Bulletins' : 'Gradebook & Reports', icon: Award, roles: ['teacher'] },
+        { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar, roles: ['teacher'] },
         { path: '/lesson-planner', label: language === 'fr' ? 'Planificateur de Cours' : 'Lesson Planner', icon: BookOpen, roles: ['teacher'] },
         { path: '/quiz', label: language === 'fr' ? 'Outil de Quiz' : 'Quiz Tool', icon: HelpCircle, roles: ['teacher'] },
         { path: '/student-progress', label: language === 'fr' ? 'Progrès des Élèves' : 'Student Progress', icon: TrendingUp, roles: ['teacher'] },
@@ -137,6 +148,7 @@ const SidebarNavigation: React.FC = () => {
     // Student items (only if not super admin)
     if (hasPermission('student') && user.role === 'student') {
       roleSpecificItems.push(
+        { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar, roles: ['student'] },
         { path: '/student-progress', label: language === 'fr' ? 'Mon Progrès' : 'My Progress', icon: BarChart3, roles: ['student'] }
       );
     }
@@ -145,6 +157,7 @@ const SidebarNavigation: React.FC = () => {
     if (hasPermission('parent') && user.role === 'parent') {
       roleSpecificItems.push(
         { path: '/parent-portal', label: language === 'fr' ? 'Portail Parent' : 'Parent Portal', icon: Users, roles: ['parent'] },
+        { path: '/timetable', label: language === 'fr' ? 'Emploi du Temps' : 'Timetable', icon: Calendar, roles: ['parent'] },
         { path: '/parent-quiz', label: language === 'fr' ? 'Quiz de Pratique' : 'Practice Quizzes', icon: HelpCircle, roles: ['parent'] }
       );
     }

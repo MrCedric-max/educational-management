@@ -43,6 +43,9 @@ import BulkOperationsManager from './components/BulkOperationsManager';
 import MobileDashboard from './components/MobileDashboard';
 import PerformanceMonitor from './components/PerformanceMonitor';
 import ApiIntegrationTest from './components/ApiIntegrationTest';
+import AttendancePage from './pages/AttendancePage';
+import GradebookPage from './pages/GradebookPage';
+import TimetablePage from './pages/TimetablePage';
 import './App.css';
 
 // Main App Content Component
@@ -118,6 +121,21 @@ const AppContent: React.FC = () => {
           <Route path="/teacher-dashboard" element={
             <ProtectedRoute allowedRoles={['teacher']}>
               <TeacherDashboard />
+            </ProtectedRoute>
+          } />
+          <Route path="/attendance" element={
+            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
+              <AttendancePage />
+            </ProtectedRoute>
+          } />
+          <Route path="/gradebook" element={
+            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher']}>
+              <GradebookPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/timetable" element={
+            <ProtectedRoute allowedRoles={['super_admin', 'school_admin', 'teacher', 'student', 'parent']}>
+              <TimetablePage />
             </ProtectedRoute>
           } />
           <Route path="/student-progress" element={

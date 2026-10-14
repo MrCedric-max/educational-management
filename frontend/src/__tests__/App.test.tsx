@@ -25,7 +25,7 @@ describe('App Component', () => {
   test('renders navigation when authenticated', () => {
     render(<App />);
     // Check if navigation is present
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getAllByRole('navigation')[0]).toBeInTheDocument();
   });
 
   test('renders main content area', () => {

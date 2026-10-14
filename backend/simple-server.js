@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -86,6 +86,79 @@ app.get('/api/schools', (req, res) => {
     data: mockSchools,
     count: mockSchools.length
   });
+});
+
+// In-memory data store for feature enhancements
+const mockAttendance = [
+  { id: 'att_1', classId: 'class_1', date: '2024-10-14', studentId: 's1', studentName: 'Emma Johnson', status: 'present' },
+  { id: 'att_2', classId: 'class_1', date: '2024-10-14', studentId: 's2', studentName: 'Michael Brown', status: 'present' },
+  { id: 'att_3', classId: 'class_1', date: '2024-10-14', studentId: 's3', studentName: 'Sophia Davis', status: 'late', timeIn: '08:15', reason: 'Traffic' },
+  { id: 'att_4', classId: 'class_1', date: '2024-10-14', studentId: 's4', studentName: 'James Wilson', status: 'absent', reason: 'Flu' }
+];
+
+const mockGrades = [
+  { id: 'g_1', classId: 'class_1', subjectId: 'math', term: 'Term 1', studentId: 's1', studentName: 'Emma Johnson', ca1: 16, ca2: 15, exam: 17, remark: 'Excellent' },
+  { id: 'g_2', classId: 'class_1', subjectId: 'math', term: 'Term 1', studentId: 's2', studentName: 'Michael Brown', ca1: 12, ca2: 13, exam: 11, remark: 'Satisfactory' }
+];
+
+const mockTimetables = [
+  { id: 's1', classId: 'class_1', className: 'Form 3A', subjectId: 'math', subjectName: 'Mathematics', teacherId: 't1', teacherName: 'Mr. Cedric Mbida', dayOfWeek: 1, periodNumber: 1, startTime: '07:30', endTime: '08:25', room: 'Room 101' },
+  { id: 's2', classId: 'class_1', className: 'Form 3A', subjectId: 'math', subjectName: 'Mathematics', teacherId: 't1', teacherName: 'Mr. Cedric Mbida', dayOfWeek: 1, periodNumber: 2, startTime: '08:25', endTime: '09:20', room: 'Room 101' },
+  { id: 's3', classId: 'class_1', className: 'Form 3A', subjectId: 'eng', subjectName: 'English Language', teacherId: 't6', teacherName: 'Ms. Clara Fon', dayOfWeek: 1, periodNumber: 3, startTime: '09:20', endTime: '10:15', room: 'Room 101' }
+];
+
+// Attendance endpoints
+app.get('/api/attendance', (req, res) => {
+  const { classId, date } = req.query;
+  let result = mockAttendance;
+  if (classId) result = result.filter(a => a.classId === classId);
+  if (date) result = result.filter(a => a.date === date);
+  res.json({ success: true, count: result.length, data: result });
+});
+
+app.post('/api/attendance', (req, res) => {
+  const { records } = req.body;
+  if (Array.isArray(records)) {
+    mockAttendance.push(...records);
+  } else if (req.body && req.body.studentId) {
+    mockAttendance.push(req.body);
+  }
+  res.status(201).json({ success: true, message: 'Attendance recorded successfully' });
+});
+
+// Grades & Gradebook endpoints
+app.get('/api/grades', (req, res) => {
+  const { classId, subjectId, term } = req.query;
+  let result = mockGrades;
+  if (classId) result = result.filter(g => g.classId === classId);
+  if (subjectId) result = result.filter(g => g.subjectId === subjectId);
+  if (term) result = result.filter(g => g.term === term);
+  res.json({ success: true, count: result.length, data: result });
+});
+
+app.post('/api/grades', (req, res) => {
+  const { grades } = req.body;
+  if (Array.isArray(grades)) {
+    mockGrades.push(...grades);
+  } else if (req.body) {
+    mockGrades.push(req.body);
+  }
+  res.status(201).json({ success: true, message: 'Grades saved successfully' });
+});
+
+// Timetable endpoints
+app.get('/api/timetables', (req, res) => {
+  const { classId, teacherId } = req.query;
+  let result = mockTimetables;
+  if (classId) result = result.filter(t => t.classId === classId);
+  if (teacherId) result = result.filter(t => t.teacherId === teacherId);
+  res.json({ success: true, count: result.length, data: result });
+});
+
+app.post('/api/timetables', (req, res) => {
+  const newSlot = { id: 'slot_' + Date.now(), ...req.body };
+  mockTimetables.push(newSlot);
+  res.status(201).json({ success: true, data: newSlot, message: 'Timetable slot created' });
 });
 
 // Auth endpoints

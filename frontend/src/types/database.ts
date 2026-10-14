@@ -428,3 +428,67 @@ export interface BulkOperation {
   ids: string[];
   data?: Record<string, any>;
 }
+
+// Timetable scheduling types
+export interface TimetableSlot {
+  id: string;
+  classId: string;
+  className?: string;
+  subjectId: string;
+  subjectName: string;
+  teacherId: string;
+  teacherName: string;
+  dayOfWeek: 1 | 2 | 3 | 4 | 5; // Monday = 1 ... Friday = 5
+  periodNumber: number; // 1 to 8
+  startTime: string; // e.g. "07:30"
+  endTime: string; // e.g. "08:25"
+  room: string;
+  system: 'anglophone' | 'francophone';
+  color?: string;
+}
+
+// Detailed Assessment and Report Card types
+export interface SubjectGradeRecord {
+  subjectId: string;
+  subjectName: string;
+  subjectNameFr: string;
+  coefficient: number;
+  caScore: number; // Continuous assessment / Devoir (out of 20 or 100)
+  examScore: number; // Exam mark (out of 20 or 100)
+  totalScore: number; // Weighted total
+  maxScore: number;
+  letterGrade?: string;
+  rankInClass?: number;
+  teacherRemark?: string;
+  teacherName?: string;
+}
+
+export interface StudentReportCard {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentNumber: string;
+  classId: string;
+  className: string;
+  academicYear: string;
+  term: string;
+  system: 'anglophone' | 'francophone';
+  subjects: SubjectGradeRecord[];
+  overallAverage: number;
+  classAverage: number;
+  highestAverage: number;
+  lowestAverage: number;
+  rank: number;
+  totalStudents: number;
+  attendanceSummary: {
+    totalDays: number;
+    daysPresent: number;
+    daysAbsent: number;
+    daysLate: number;
+  };
+  disciplineRating: 'Excellent' | 'Good' | 'Satisfactory' | 'Needs Improvement';
+  classMasterRemark: string;
+  principalRemark: string;
+  issueDate: Date;
+}
+
