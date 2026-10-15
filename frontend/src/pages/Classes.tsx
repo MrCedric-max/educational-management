@@ -11,6 +11,8 @@ import Modal from '../components/Modal';
 import toast from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useCameroonianEducation } from '../contexts/CameroonianEducationContext';
+import UserSwitcherModal from '../components/UserSwitcherModal';
+import { ArrowRightLeft } from 'lucide-react';
 
 // Types and Interfaces
 type SchoolSystem = 'anglophone' | 'francophone';
@@ -125,6 +127,8 @@ const SuperAdminDashboard: React.FC = () => {
     packageDuration: 1,
     selectedContent: [] as string[]
   });
+  
+  const [showUserSwitcherModal, setShowUserSwitcherModal] = useState(false);
 
   // Reset component state when user changes
   useEffect(() => {
@@ -486,82 +490,137 @@ const SuperAdminDashboard: React.FC = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Super Admin Dashboard</h1>
-        <p className="text-gray-600">Manage schools and monitor system-wide performance</p>
+    <div className="p-6 max-w-7xl mx-auto space-y-6">
+      {/* Executive Super Admin Command Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 text-white shadow-xl border border-slate-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <div className="flex items-center space-x-2 text-indigo-300 text-xs font-semibold uppercase tracking-wider mb-1">
+              <span className="bg-indigo-700/60 px-2.5 py-0.5 rounded-full border border-indigo-500/30">
+                Super Administrator
+              </span>
+              <span>•</span>
+              <span>Réseau National MINESEC / MINEDUB</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+              Super Admin Network Governance
+            </h1>
+            <p className="text-slate-300 text-sm mt-1 max-w-2xl">
+              Supervision centrale des établissements scolaires, gestion des abonnements, bibliothèque nationale et infrastructure système.
+            </p>
+          </div>
+
+          {/* Quick Action Toolbar */}
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => {
+                setModalType('create-school');
+                setIsModalOpen(true);
+              }}
+              className="inline-flex items-center px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow transition-colors"
+            >
+              <Plus className="h-4 w-4 mr-1.5" />
+              Ajouter une École
+            </button>
+            <button
+              onClick={() => navigate('/global-search')}
+              className="inline-flex items-center px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-700 transition-colors"
+            >
+              <Search className="h-4 w-4 mr-1.5" />
+              Recherche
+            </button>
+            <button
+              onClick={() => navigate('/feature-management')}
+              className="inline-flex items-center px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold border border-slate-700 transition-colors"
+            >
+              <Settings className="h-4 w-4 mr-1.5" />
+              Fonctionnalités
+            </button>
+            <button
+              onClick={() => setShowUserSwitcherModal(true)}
+              className="inline-flex items-center px-3.5 py-2 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow transition-colors"
+            >
+              <ArrowRightLeft className="h-4 w-4 mr-1.5" />
+              Changer d'Utilisateur
+            </button>
+          </div>
+        </div>
       </div>
 
+      <UserSwitcherModal
+        isOpen={showUserSwitcherModal}
+        onClose={() => setShowUserSwitcherModal(false)}
+      />
 
       {/* Navigation Tabs */}
-      <div className="bg-white rounded-lg shadow-md mb-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="border-b border-gray-200">
-          <nav className="flex space-x-8 px-6">
+          <nav className="flex space-x-6 px-4 overflow-x-auto">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'dashboard'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <BarChart3 className="inline-block w-4 h-4 mr-2" />
-              Dashboard
+              <BarChart3 className="inline-block w-4 h-4 mr-1.5" />
+              Vue d'Ensemble
             </button>
             <button
               onClick={() => setActiveTab('schools')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'schools'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <School className="inline-block w-4 h-4 mr-2" />
-              Schools
+              <School className="inline-block w-4 h-4 mr-1.5" />
+              Établissements Réseau
             </button>
             <button
               onClick={() => setActiveTab('users')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'users'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <Users className="inline-block w-4 h-4 mr-2" />
-              Users
+              <Users className="inline-block w-4 h-4 mr-1.5" />
+              Gestion Utilisateurs
             </button>
             <button
               onClick={() => setActiveTab('content')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'content'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <BookOpen className="inline-block w-4 h-4 mr-2" />
-              Content Management
+              <BookOpen className="inline-block w-4 h-4 mr-1.5" />
+              Banque de Contenus
             </button>
             <button
               onClick={() => setActiveTab('subscriptions')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'subscriptions'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <DollarSign className="inline-block w-4 h-4 mr-2" />
-              Subscriptions & Revenue
+              <DollarSign className="inline-block w-4 h-4 mr-1.5" />
+              Revenus & Abonnements
             </button>
             <button
               onClick={() => setActiveTab('reports')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`py-3.5 px-2 border-b-2 font-bold text-xs flex items-center space-x-2 transition-colors ${
                 activeTab === 'reports'
-                  ? 'border-blue-500 text-blue-600'
+                  ? 'border-indigo-600 text-indigo-600'
                   : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
-              <FileText className="inline-block w-4 h-4 mr-2" />
-              Reports
+              <FileText className="inline-block w-4 h-4 mr-1.5" />
+              Rapports Réseau
             </button>
           </nav>
         </div>
